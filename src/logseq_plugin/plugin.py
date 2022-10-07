@@ -103,7 +103,7 @@ class LogseqPlugin(object):
 
         async def wait_loop():
             while not response:
-                await asyncio.sleep(0.01)
+                await asyncio.sleep(0.001)
             return response
 
         await self.emit(name, (*args,), callback=set_response)
