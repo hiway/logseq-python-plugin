@@ -33,6 +33,7 @@ class LogseqPlugin(object):
             Mount("/assets", app=StaticFiles(directory="assets"), name="assets")
         ]
         self.sio = socketio.AsyncServer(async_mode="asgi", cors_allowed_origins="*")
+        self.emit = self.sio.emit
         self.starlette_app = Starlette(debug=True, routes=self.routes)
         self.asgi_app = socketio.ASGIApp(self.sio, self.starlette_app)
         self.sio.on("connect", self._on_connect)
@@ -105,7 +106,7 @@ class LogseqPlugin(object):
                 await asyncio.sleep(0.01)
             return response
 
-        await self.sio.emit(name, (*args,), callback=set_response)
+        await self.emit(name, (*args,), callback=set_response)
         try:
             await asyncio.wait_for(wait_loop(), timeout=timeout)
             return mkbox(response)

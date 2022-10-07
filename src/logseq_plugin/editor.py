@@ -24,14 +24,14 @@ class LogseqEditor(object):
 
         for command, func in self._command_handlers.items():
             event_name = f"slash-command-{command.replace('/', '')}"
-            await self._plugin.sio.emit(
+            await self._plugin.emit(
                 "logseq.Editor.registerSlashCommand", (command, event_name)
             )
             self._plugin.sio.on(event_name, func)
 
         for label, data in self._command_palette.items():
             event_name = f"command-palette-{label}"
-            await self._plugin.sio.emit(
+            await self._plugin.emit(
                 "logseq.Editor.registerCommandPalette",
                 (label, data["shortcut"], event_name),
             )
@@ -39,7 +39,7 @@ class LogseqEditor(object):
 
         for item_name, func in self._context_menu_item.items():
             event_name = f"context-menu-item-{item_name}"
-            await self._plugin.sio.emit(
+            await self._plugin.emit(
                 "logseq.Editor.registerBlockContextMenuItem", (item_name, event_name)
             )
             self._plugin.sio.on(event_name, func)
@@ -91,7 +91,7 @@ class LogseqEditor(object):
         return outer
 
     async def insertAtEditingCursor(self, content: str):
-        await self._plugin.sio.emit("logseq.Editor.insertAtEditingCursor", content)
+        await self._plugin.emit("logseq.Editor.insertAtEditingCursor", content)
 
     async def getCurrentBlock(self):
         return Box(await self._plugin.request("logseq.Editor.getCurrentBlock"))
@@ -109,7 +109,7 @@ class LogseqEditor(object):
         )
 
     async def openInRightSidebar(self, uuid: str):
-        return await self._plugin.sio.emit("logseq.Editor.openInRightSidebar", uuid)
+        return await self._plugin.emit("logseq.Editor.openInRightSidebar", uuid)
 
     async def updateBlock(
         self,
@@ -133,7 +133,7 @@ class LogseqEditor(object):
         )
 
     async def upsertBlockProperty(self, block: Block, key: str, value: str):
-        return await self._plugin.sio.emit(
+        return await self._plugin.emit(
             "logseq.Editor.upsertBlockProperty", (block, key, value)
         )
 
