@@ -4,7 +4,8 @@ Write Logseq Plugins in Python 3
 
 ## Example
 
-Here's how to write a Logseq plugin that responds to a slash command.
+Write a Logseq plugin that responds to a keyboard shortcut 
+and opens a specified page in the right sidebar:
 
 ```python
 from logseq_plugin import LogseqPlugin
@@ -20,3 +21,15 @@ async def go_to_todo_page():
 
 logseq.run(port=8484)
 ```
+
+## Status
+
+> Barely Works
+
+## Getting Started
+
+Compile the Logseq plugin by `cd` ing into `plugin` and running `yarn` followed by `yarn install`.
+
+Install like any Python library with venv and `pip install -e .`
+
+Run `python examples/01-hello.py`
