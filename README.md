@@ -4,7 +4,7 @@ Write Logseq Plugins in Python 3
 
 ## Example
 
-Write a Logseq plugin that responds to a keyboard shortcut 
+Logseq plugin that responds to a keyboard shortcut 
 and opens a specified page in the right sidebar:
 
 ```python
