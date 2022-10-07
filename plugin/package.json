@@ -1,0 +1,39 @@
+{
+  "name": "logseq-python-plugin",
+  "version": "0.1.0",
+  "description": "Write Logseq Plugins in Python 3",
+  "repository": "https://github.com/hiway/logseq-python-plugin",
+  "author": "Harshad Sharma (@hiway)",
+  "license": "MIT",
+  "private": true,
+  "main": "dist/index.html",
+  "targets": {
+    "main": false
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "parcel build --no-source-maps index.html --public-url ./",
+    "watch": "parcel watch --no-source-maps index.html --public-url ./"
+  },
+  "dependencies": {
+    "@logseq/libs": "0.0.1-alpha.35",
+    "socket.io-client": "^4.5.2"
+  },
+  "logseq": {
+    "id": "logseq-python-plugin",
+    "title": "Python Plugin",
+    "icon": "icon.png"
+  },
+  "devDependencies": {
+    "assert": "^2.0.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "events": "^3.3.0",
+    "https-browserify": "^1.0.0",
+    "parcel": "^2.0.0",
+    "querystring-es3": "^0.2.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "url": "^0.11.0"
+  }
+}

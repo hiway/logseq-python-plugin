@@ -127,3 +127,17 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# Logseq plugin artifacts
+node_modules
+.cache
+dist
+.DS_Store
+.parcel-cache/
+.venv
+assets/
+yarn-error.log
+*.session
+*.session-journal
+settings.json
