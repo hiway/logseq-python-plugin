@@ -148,17 +148,7 @@ async function main() {
         socket.emit("logseq.Editor.onInputSelectionEnd", e)
     })
 
-
     socket.on("logseq.DB.datascriptQuery", async (query: string, callback) => {
-        const d = new Date();
-        const todayDateObj = {
-            day: `${d.getDate()}`.padStart(2, "0"),
-            month: `${d.getMonth() + 1}`.padStart(2, "0"),
-            year: d.getFullYear(),
-        };
-        const todayDate = `${todayDateObj.year}${todayDateObj.month}${todayDateObj.day}`;
-        console.log("logseq-python-plugin: Running datascript query: ", query)
-        console.log("logseq-python-plugin: Today date: ", todayDate)
         const result = await logseq.DB.datascriptQuery(query)
         callback(result)
     })
