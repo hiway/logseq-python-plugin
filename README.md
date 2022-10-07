@@ -24,7 +24,10 @@ logseq.run(port=8484)
 
 ## Status
 
-> Barely Works
+> Proof-of-concept
+
+Also known as "works on my machine". 
+Try it if you like, if it breaks you get to keep all pieces! 🎉
 
 ## Getting Started
 
