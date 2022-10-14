@@ -109,15 +109,27 @@ class PluginServer:
         """
         log.info(f"Client {sid} ready")
 
-    async def emit(self, event: str, *args):
+    async def emit(self, name: str, *args, **data):
         """
         Emit an event to all connected clients.
-        """
-        await self._sio.emit(event, args)
 
-    async def request(self, name: str, *args, timeout: int = 3):
+        Args:
+            name: The name of the event.
+            *args: The arguments to pass to the event.
+            **data: The data to pass to the event.
         """
-        Request data from a client.
+        data.update({"args": args})
+        await self._sio.emit(name, data)
+
+    async def request(self, name: str, *args, timeout: int = 3, **data):
+        """
+        Emit an event and wait for reply from a client.
+
+        Args:
+            name: The name of the request.
+            *args: The arguments to pass to the request.
+            timeout: The timeout in seconds.
+            **data: The data to pass to the request.
         """
         response = None
 
@@ -131,7 +143,8 @@ class PluginServer:
             return response
 
         log.debug(f"Request: {name!r} <== {args!r}")
-        await self._sio.emit(name, args, callback=set_response)
+        data.update({"args": args})
+        await self._sio.emit(name, data, callback=set_response)
         try:
             await asyncio.wait_for(wait_loop(), timeout=timeout)
             log.debug(f"Response: {response!r}")
