@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <title>Logspyq</title>
+  <script src="/static/scripts/tailwind.min.js"></script>
+  <script src="/static/scripts/htmx.min.js"></script>
+  <link rel="stylesheet" href="/static/styles/app.css">
+  <link rel="icon" sizes="180x180" href="/static/images/logo.svg">
+</head>
+
+<body>
+  <h1 class="text-3xl font-sans hover:font-serif underline">
+    Logspyq
+  </h1>
+
+  <button hx-post="/clicked" hx-swap="outerHTML">
+    Click Me
+  </button>
+
+  <div class="grid gap-4 grid-cols-2">
+      <div class="">
+        <div class="p-6 max-w-sm mx-auto bg-white rounded-xl shadow-lg flex items-center space-x-4">
+          <div class="shrink-0">
+            <img class="h-12 w-12" src="/static/images/logo.svg" alt="ChitChat Logo">
+          </div>
+          <div>
+            <div class="text-xl font-medium text-black">ChitChat</div>
+            <p class="text-slate-500">You have a new message!</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="">
+        <div
+          class="py-8 px-8 max-w-sm mx-auto bg-white rounded-xl shadow-lg space-y-2 sm:py-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-6">
+          <img class="block mx-auto h-24 rounded-full sm:mx-0 sm:shrink-0" src="/static/images/logo.svg"
+            alt="Woman's Face">
+          <div class="text-center space-y-2 sm:text-left">
+            <div class="space-y-0.5">
+              <p class="text-lg text-black font-semibold">
+                Erin Lindford
+              </p>
+              <p class="text-slate-500 font-medium">
+                Product Engineer
+              </p>
+            </div>
+            <button
+              class="px-4 py-1 text-sm text-purple-600 font-semibold rounded-full border border-purple-200 hover:text-white hover:bg-purple-600 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-offset-2">Message</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="">
+        <div class="bg-white dark:bg-slate-800 rounded-lg px-6 py-8 ring-1 ring-slate-900/5 shadow-xl">
+          <div>
+            <span class="inline-flex items-center justify-center p-2 bg-indigo-500 rounded-md shadow-lg">
+              <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" aria-hidden="true">
+                <!-- ... -->
+              </svg>
+            </span>
+          </div>
+          <h3 class="text-slate-900 dark:text-white mt-5 text-base font-medium tracking-tight">Writes
+            Upside-Down
+          </h3>
+          <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm">
+            The Zero Gravity Pen can be used to write in any orientation, including upside-down. It even
+            works
+            in outer
+            space.
+          </p>
+        </div>
+      </div>
+  </div>
+
+
+</body>
+
+</html>

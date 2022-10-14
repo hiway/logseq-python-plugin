@@ -26,13 +26,13 @@ def read(*names, **kwargs):
 
 
 setup(
-    name='logseq_plugin',
+    name='logspyq',
     version='0.1.0',
     license='MIT',
-    description='Write Logseq Plugins in Python 3',
+    description='Python-for-Logseq Plugins',
     author='Harshad Sharma',
     author_email='harshad@sharma.io',
-    url='https://github.com/hiway/logseq-python-plugin',
+    url='https://github.com/hiway/logspyq',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
@@ -41,14 +41,25 @@ setup(
     keywords=[
     ],
     install_requires=[
+        'apscheduler',
+        'click',
+        'keyvalue-sqlite==1.0.5',
         'python-box',
         'python-socketio',
-        'starlette',
+        'quart',
+        'quart-cors',
         'uvicorn[standard]',
+        'uvloop',
+    ],
+    dev_requires=[
+        'pytest',
+        'pytest-asyncio',
+        'pytest-cov',
+        'pytest-mock',
     ],
     entry_points={
         'console_scripts': [
-            'logseq_plugin = logseq_plugin.cli:main',
+            'logspyq = logspyq.server.cli:main',
         ]
     },
 )

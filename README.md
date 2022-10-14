@@ -8,7 +8,7 @@ Logseq plugin that responds to a keyboard shortcut
 and opens a specified page in the right sidebar:
 
 ```python
-from logseq_plugin import LogseqPlugin
+from logspeq.api import LogseqPlugin
 
 logseq = LogseqPlugin()
 
@@ -19,7 +19,7 @@ async def go_to_todo_page():
     await logseq.Editor.openInRightSidebar(todo_page.uuid)
 
 
-logseq.run(port=8484)
+logseq.run()
 ```
 
 ## Status
