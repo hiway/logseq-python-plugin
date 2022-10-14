@@ -158,4 +158,3 @@ class PluginServer:
             error_message = f"Request timed out: {name!r} {args!r}"
             log.error(error_message)
             raise TimeoutError(error_message)
-

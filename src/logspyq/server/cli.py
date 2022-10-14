@@ -1,4 +1,3 @@
-import asyncio
 import click
 from .server import PluginServer
 
