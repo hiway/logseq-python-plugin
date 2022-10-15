@@ -25,6 +25,14 @@ async def appendBlockInPage(sid):
     page = await logseq.Editor.getCurrentPage()
     await logseq.Editor.appendBlockInPage(page.uuid, "Demo: appendBlockInPage")
 
+@logseq.on_interval(seconds=5)
+async def check_editing():
+    editing = await logseq.Editor.checkEditing()
+    if editing:
+        logseq.log.info(f"Editing: {editing}")
+    else:
+        logseq.log.info("Not editing")
+
 
 if __name__ == "__main__":
     logseq.run(host="localhost", port=3000)

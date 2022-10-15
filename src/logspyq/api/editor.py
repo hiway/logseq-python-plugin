@@ -1,3 +1,4 @@
+from box import Box
 from logspyq.api.proxy import LogseqProxy
 
 
@@ -41,19 +42,22 @@ class Editor(LogseqProxy):
     async def appendBlockInPage(self, page: str, content: str, **opts):
         return await self.request("appendBlockInPage", page, content, **opts)
 
+    async def checkEditing(self) -> bool:
+        return await self.request("checkEditing")
+
     async def insertAtEditingCursor(self, text: str):
         await self.emit("insertAtEditingCursor", text)
 
-    async def getCurrentBlock(self):
+    async def getCurrentBlock(self) -> Box:
         return await self.request("getCurrentBlock")
 
-    async def getCurrentPage(self):
+    async def getCurrentPage(self) -> Box:
         return await self.request("getCurrentPage")
 
-    async def getEditingBlockContent(self):
+    async def getEditingBlockContent(self) -> str:
         return await self.request("getEditingBlockContent")
 
-    async def insertBlock(self, srcBlk: str, content: str, sibling=True, isPageBlock=False, before=False, **opts):
+    async def insertBlock(self, srcBlk: str, content: str, sibling=True, isPageBlock=False, before=False, **opts) -> Box:
         opts["sibling"] = sibling
         opts["isPageBlock"] = isPageBlock
         opts["before"] = before

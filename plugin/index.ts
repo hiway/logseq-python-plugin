@@ -150,6 +150,9 @@ async function main() {
       if (callback && result) {
         console.log("Calling callback with result:", result)
         callback(result)
+      } else if (callback) {
+        console.log("Calling callback with 'null'")
+        callback("null")
       }
     } catch (e) {
       console.error("Error executing function:", event, e)

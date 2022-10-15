@@ -108,6 +108,7 @@ class PluginServer:
         if not self._agents:
             self._agents = discover_agents()
             for agent in self._agents.values():
+                log.info(f"Loading agent: {agent}, setting server instance")
                 agent.logseq._set_server(self)
             log.info(f"Found {len(self._agents)} agents.")
         else:
@@ -120,6 +121,7 @@ class PluginServer:
             if 'logseq' in dir(agent):
                 await agent.logseq.register_callbacks_with_logseq()
             else:
+                # Running in single-agent mode.
                 await agent.register_callbacks_with_logseq()
 
     async def _index(self):
@@ -206,6 +208,8 @@ class PluginServer:
                 return Box(response)
             elif isinstance(response, list):
                 return BoxList(response)
+            elif isinstance(response, str) and response == "null":
+                return None
             else:
                 return response
         except asyncio.TimeoutError:
