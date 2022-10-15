@@ -1,5 +1,5 @@
 import '@logseq/libs'
-import { SettingSchemaDesc } from '@logseq/libs/dist/LSPlugin';
+import { SettingSchemaDesc, SimpleCommandKeybinding } from '@logseq/libs/dist/LSPlugin';
 import * as io from 'socket.io-client'
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
@@ -120,6 +120,7 @@ async function main() {
   socket.on("App.onMacroRendererSlotted", async (data) => {
     const event_name = <string>data.event_name
 
+    // @ts-ignore
     logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments } }) => {
       console.log("Macro renderer slotted:", event_name, slot, arguments)
       socket.emit(event_name, { slot, arguments })
@@ -166,8 +167,38 @@ async function main() {
     })
     console.log("Registered theme mode changed:", event_name)
   })
-  
 
+  socket.on("App.registerCommand", async (data) => {
+    // registerCommand(type: string, opts: { desc?: string; key: string; keybinding?: SimpleCommandKeybinding; label: string; palette?: boolean }, action: SimpleCommandCallback): void
+    const type = <string>data.type
+    const desc = <string>data.desc
+    const key = <string>data.key
+    const keybinding = <SimpleCommandKeybinding>data.keybinding
+    const label = <string>data.label
+    const palette = <boolean>data.palette
+    const event_name = <string>data.event_name
+
+    logseq.App.registerCommand(type, { desc, key, keybinding, label, palette }, async (e) => {
+      console.log("Command registered:", type, desc, key, keybinding, label, palette, event_name, e)
+      socket.emit(event_name, e)
+    })
+    console.log("Registered command:", type, desc, key, keybinding, label, palette, event_name)
+  })
+  
+  socket.on("App.registerCommandPalette", async (data) => {
+    // registerCommandPalette(opts: { key: string; keybinding?: SimpleCommandKeybinding; label: string }, action: SimpleCommandCallback): void
+    const key = <string>data.key
+    const keybinding = <SimpleCommandKeybinding>data.keybinding
+    const label = <string>data.label
+    const event_name = <string>data.event_name
+
+    logseq.App.registerCommandPalette({ key, keybinding, label }, async (e) => {
+      console.log("Command palette registered:", key, keybinding, label, event_name, e)
+      socket.emit(event_name, e)
+    })
+    console.log("Registered command palette:", key, keybinding, label, event_name)
+  })
+  
 
 
 
@@ -215,6 +246,8 @@ async function main() {
       "App.onBlockRendererSlotted",
       "App.onCurrentGraphChanged",
       "App.onMacroRendererSlotted",
+      "App.registerCommand",
+      "App.registerCommandPalette",
     ].includes(event)) {
       console.log("Skipping event:", event)
       return
