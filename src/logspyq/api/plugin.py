@@ -1,6 +1,5 @@
 import logging
 from logspyq.api.app import App
-from logspyq.api.assets import Assets
 from logspyq.api.db import DB
 from logspyq.api.editor import Editor
 from logspyq.api.ui import UI
@@ -24,7 +23,6 @@ class LSPluginUser:
         self._server = server
         # Add proxies
         self.App = App(self, "App")
-        self.Assets = Assets(self, "Assets")
         self.DB = DB(self, "DB")
         self.Editor = Editor(self, "Editor")
         self.UI = UI(self, "UI")
@@ -42,7 +40,6 @@ class LSPluginUser:
         log.debug("Register callbacks with Logseq")
 
         await self.App.register_callbacks_with_logseq()
-        await self.Assets.register_callbacks_with_logseq()
         await self.DB.register_callbacks_with_logseq()
         await self.Editor.register_callbacks_with_logseq()
         await self.UI.register_callbacks_with_logseq()

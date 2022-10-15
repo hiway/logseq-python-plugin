@@ -222,12 +222,6 @@ async function main() {
   //   console.log("Registered DB changed:", event_name)
   // })
 
-  
-    
-
-
-
-
   async function executeFunctionByName(functionName, context, args) {
     var namespaces = functionName.split(".");
     var func = namespaces.pop();
