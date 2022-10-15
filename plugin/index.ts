@@ -199,6 +199,31 @@ async function main() {
     console.log("Registered command palette:", key, keybinding, label, event_name)
   })
   
+  // socket.on("DB.onBlockChanged", async (data) => {
+  //   // onBlockChanged(uuid: string, callback: (block: BlockEntity, txData: IDatom[], txMeta?: { outlinerOp: string }) => void): IUserOffHook
+  //   const event_name = <string>data.event_name
+  //   const uuid = <string>data.uuid
+
+  //   logseq.DB.onBlockChanged(uuid, async (block, txData, txMeta) => {
+  //     console.log("Block changed:", event_name, {"uuid":uuid, "block":block, "txData":txData, "txMeta":txMeta})
+  //     socket.emit(event_name, {"uuid":uuid, "block":block, "txData":txData, "txMeta":txMeta})
+  //   })
+  //   console.log("Registered block changed:", event_name, uuid)
+  // })
+
+  // socket.on("DB.onChanged", async (data) => {
+  //   // onChanged: IUserHook<{ blocks: BlockEntity[]; txData: IDatom[]; txMeta?: { outlinerOp: string } }, IUserOffHook>
+  //   const event_name = <string>data.event_name
+
+  //   logseq.DB.onChanged(async (e) => {
+  //     console.log("DB changed:", event_name, e)
+  //     socket.emit(event_name, e)
+  //   })
+  //   console.log("Registered DB changed:", event_name)
+  // })
+
+  
+    
 
 
 
@@ -248,6 +273,8 @@ async function main() {
       "App.onMacroRendererSlotted",
       "App.registerCommand",
       "App.registerCommandPalette",
+      "DB.onChanged",
+      "DB.onBlockChanged",
     ].includes(event)) {
       console.log("Skipping event:", event)
       return
