@@ -2,40 +2,53 @@ from re import A
 from box import Box
 from typing import Optional
 from logspyq.api.proxy import LogseqProxy
-
+from .utils import mkbox
 
 class Editor(LogseqProxy):
     def registerSlashCommand(self, command: str):
         def decorator(func):
             event_name = f"slash-command-{command.replace('/', '')}"
+
+            async def _async_inner(*args):
+                args = [mkbox(a) for a in args]
+                return await func(*args)
+
             self.register_callback(
                 "registerSlashCommand",
                 event_name=event_name,
                 command=command,
-                func=func,
+                func=_async_inner,
             )
-            return func
+            return _async_inner
 
         return decorator
 
     def registerBlockContextMenuItem(self, tag: str):
         def decorator(func):
+            async def _async_inner(*args):
+                args = [mkbox(a) for a in args]
+                return await func(*args)
+
             self.register_callback(
                 "registerBlockContextMenuItem",
                 event_name=f"block-context-menu-item-{tag}",
                 tag=tag,
-                func=func,
+                func=_async_inner,
             )
-            return func
+            return _async_inner
 
         return decorator
 
     def onInputSelectionEnd(self):
         def decorator(func):
+            async def _async_inner(*args):
+                args = [mkbox(a) for a in args]
+                return await func(*args)
+
             self.register_callback(
-                "onInputSelectionEnd", event_name="input-selection-end", func=func
+                "onInputSelectionEnd", event_name="input-selection-end", func=_async_inner
             )
-            return func
+            return _async_inner
 
         return decorator
 
@@ -81,7 +94,7 @@ class Editor(LogseqProxy):
     async def editBlock(self, srcBlock: str, pos: Optional[int] = None):
         """
         Edit a block.
-        
+
         editBlock(srcBlock: BlockIdentity, opts?: { pos: number }): Promise<void>
         """
         if pos:
@@ -89,17 +102,76 @@ class Editor(LogseqProxy):
         else:
             await self.emit("editBlock", srcBlock)
 
-    async def insertAtEditingCursor(self, text: str):
-        await self.emit("insertAtEditingCursor", text)
+    async def exitEditingMode(self, selectBlock: bool = False):
+        await self.emit("exitEditingMode", selectBlock)
+
+    async def getAllPages(self, repo: Optional[str] = None) -> Box:
+        if repo:
+            return await self.request("getAllPages", {"repo": repo})
+        else:
+            return await self.request("getAllPages")
+    
+    async def getBlock(self, srcBlock: str, includeChildren: bool = False) -> Box:
+        """
+        getBlock(srcBlock: number | BlockIdentity, opts?: Partial<{ includeChildren: boolean }>)
+        """
+        return await self.request("getBlock", srcBlock, {"includeChildren": includeChildren})
+
+    async def getBlockProperties(self, block: str) -> Box:
+        return await self.request("getBlockProperties", block)
+    
+    async def getBlockProperty(self, block: str, key: str) -> str:
+        return await self.request("getBlockProperty", block, key)
 
     async def getCurrentBlock(self) -> Box:
         return await self.request("getCurrentBlock")
 
     async def getCurrentPage(self) -> Box:
         return await self.request("getCurrentPage")
+    
+    async def getCurrentPageBlocksTree(self) -> Box:
+        return await self.request("getCurrentPageBlocksTree")
 
-    async def getEditingBlockContent(self) -> str:
+    async def getEditingBlockContent(self) -> Box:
         return await self.request("getEditingBlockContent")
+
+    async def getEditingCursorPosition(self) -> Box:
+        return await self.request("getEditingCursorPosition")
+
+    async def getNextSiblingBlock(self, srcBlock: str) -> Box:
+        return await self.request("getNextSiblingBlock", srcBlock)
+    
+    async def getPage(self, srcPage: str, includeChildren: bool) -> Box:
+        return await self.request("getPage", srcPage, {"includeChildren": includeChildren})
+
+    async def getPageBlocksTree(self, page: str) -> Box:
+        return await self.request("getPageBlocksTree", page)
+    
+    async def getPageLinkedReferences(self, page: str) -> Box:
+        return await self.request("getPageLinkedReferences", page)
+
+    async def getPagesFromNamespace(self, namespace: str) -> Box:
+        return await self.request("getPagesFromNamespace", namespace)
+
+    async def getPagesTreeFromNamespace(self, namespace: str) -> Box:
+        return await self.request("getPagesTreeFromNamespace", namespace)
+
+    async def getPreviousSiblingBlock(self, srcBlock: str) -> Box:
+        return await self.request("getPreviousSiblingBlock", srcBlock)
+    
+    async def getSelectedBlocks(self) -> Box:
+        return await self.request("getSelectedBlocks")
+
+    async def insertAtEditingCursor(self, text: str):
+        await self.emit("insertAtEditingCursor", text)
+
+    async def insertBatchBlock(self, srcBlock: str, batch: list, before: bool = False, sibling: bool = True):
+        opts = {}
+        if before:
+            opts.update({"before": before})
+        if sibling:
+            opts.update({"sibling": sibling})
+        return await self.request("insertBatchBlock", srcBlock, batch, opts)
 
     async def insertBlock(
         self,
@@ -115,5 +187,43 @@ class Editor(LogseqProxy):
         opts["before"] = before
         return await self.request("insertBlock", srcBlk, content, **opts)
 
-    async def exitEditingMode(self, selectBlock: bool = False):
-        await self.emit("exitEditingMode", selectBlock)
+    async def moveBlock(self, srcBlock: str, targetBlock: str, before: bool = False, children: bool = False):
+        opts = {}
+        if before:
+            opts.update({"before": before})
+        if children:
+            opts.update({"children": children})
+        await self.emit("moveBlock", srcBlock, targetBlock, opts)
+    
+    async def openInRightSidebar(self, uuid: str):
+        await self.emit("openInRightSidebar", uuid)
+    
+    async def prependBlockInPage(self, page: str, content: str, **opts) -> Box:
+        return await self.request("prependBlockInPage", page, content, **opts)
+    
+    async def removeBlock(self, srcBlock: str):
+        await self.emit("removeBlock", srcBlock)
+    
+    async def removeBlockProperty(self, block: str, key: str):
+        await self.emit("removeBlockProperty", block, key)
+    
+    async def renamePage(self, oldName: str, newName: str):
+        await self.emit("renamePage", oldName, newName)
+    
+    async def restoreEditingCursor(self):
+        await self.emit("restoreEditingCursor")
+    
+    async def scrollToBlockInPage(self, pageName: str, blockId: str, replace_state: bool = False):
+        await self.emit("scrollToBlockInPage", pageName, blockId, {"replace_state": replace_state})
+    
+    async def setBlockCollapsed(self, uuid: str, collapsed: bool = True, toggle: bool = False):
+        opts = {}
+        if collapsed:
+            opts.update({"collapsed": collapsed})
+        if toggle:
+            opts.update({"collapsed": "toggle"})
+        await self.emit("setBlockCollapsed", uuid, opts)
+    
+    async def updateBlock(self, srcBlock: str, content: str, **properties):
+        await self.emit("updateBlock", srcBlock, content, {"properties": properties})
+        

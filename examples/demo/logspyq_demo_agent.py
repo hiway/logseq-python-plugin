@@ -19,7 +19,10 @@ async def input_demo(sid, event):
     # await logseq.Editor.deletePage("BOING")
     # await logseq.Editor.appendBlockInPage("BOING", "Demo, World!")
     # await logseq.Editor.insertAtEditingCursor("[[BOING]]")
-    await logseq.Editor.editBlock(event.block.uuid)
+    # b = await logseq.Editor.getCurrentBlock()
+    # await logseq.Editor.updateBlock(b.uuid, "YOU CALLED?")
+    # await logseq.Editor.scrollToBlockInPage("Scrapbook", "634ac67f-f8ab-4e19-b755-272cda30a490")
+    print("input_demo", sid, event.text)
 
 
 @logseq.Editor.registerSlashCommand("appendBlockInPage")
@@ -28,13 +31,13 @@ async def appendBlockInPage(sid):
     page = await logseq.Editor.getCurrentPage()
     await logseq.Editor.appendBlockInPage(page.uuid, "Demo: appendBlockInPage")
 
-@logseq.on_interval(seconds=5)
-async def check_editing():
-    editing = await logseq.Editor.checkEditing()
-    if editing:
-        logseq.log.info(f"Editing: {editing}")
-    else:
-        logseq.log.info("Not editing")
+# @logseq.on_interval(seconds=5)
+# async def check_editing():
+#     editing = await logseq.Editor.checkEditing()
+#     if editing:
+#         logseq.log.info(f"Editing: {editing}")
+#     else:
+#         logseq.log.info("Not editing")
 
 
 if __name__ == "__main__":
