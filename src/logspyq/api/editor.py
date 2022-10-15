@@ -1,4 +1,5 @@
 from box import Box
+from typing import Optional
 from logspyq.api.proxy import LogseqProxy
 
 
@@ -7,10 +8,10 @@ class Editor(LogseqProxy):
         def decorator(func):
             event_name = f"slash-command-{command.replace('/', '')}"
             self.register_callback(
-                "registerSlashCommand", 
-                    event_name=event_name,
-                    command=command,
-                    func=func
+                "registerSlashCommand",
+                event_name=event_name,
+                command=command,
+                func=func,
             )
             return func
 
@@ -19,10 +20,10 @@ class Editor(LogseqProxy):
     def registerBlockContextMenuItem(self, tag: str):
         def decorator(func):
             self.register_callback(
-                "registerBlockContextMenuItem", 
-                    event_name=f"block-context-menu-item-{tag}",
-                    tag=tag,
-                    func=func
+                "registerBlockContextMenuItem",
+                event_name=f"block-context-menu-item-{tag}",
+                tag=tag,
+                func=func,
             )
             return func
 
@@ -31,9 +32,7 @@ class Editor(LogseqProxy):
     def onInputSelectionEnd(self):
         def decorator(func):
             self.register_callback(
-                "onInputSelectionEnd", 
-                    event_name="input-selection-end",
-                    func=func
+                "onInputSelectionEnd", event_name="input-selection-end", func=func
             )
             return func
 
@@ -44,6 +43,36 @@ class Editor(LogseqProxy):
 
     async def checkEditing(self) -> bool:
         return await self.request("checkEditing")
+
+    async def createPage(
+        self,
+        pageName: str,
+        createFirstBlock: bool = False,
+        format: str = "markdown",
+        journal: bool = False,
+        redirect: bool = False,
+        **properties,
+    ):
+        """
+        Create a new page.
+
+        createPage(
+            pageName: string,
+            properties?: {},
+            opts?: Partial<{
+                createFirstBlock: boolean;
+                format: "markdown" | "org";
+                journal: boolean;
+                redirect: boolean
+                }>): Promise<PageEntity>
+        """
+        opts = {
+            "createFirstBlock": createFirstBlock,
+            "format": format,
+            "journal": journal,
+            "redirect": redirect,
+        }
+        return await self.request("createPage", pageName, properties, **opts)
 
     async def insertAtEditingCursor(self, text: str):
         await self.emit("insertAtEditingCursor", text)
@@ -57,7 +86,15 @@ class Editor(LogseqProxy):
     async def getEditingBlockContent(self) -> str:
         return await self.request("getEditingBlockContent")
 
-    async def insertBlock(self, srcBlk: str, content: str, sibling=True, isPageBlock=False, before=False, **opts) -> Box:
+    async def insertBlock(
+        self,
+        srcBlk: str,
+        content: str,
+        sibling=True,
+        isPageBlock=False,
+        before=False,
+        **opts,
+    ) -> Box:
         opts["sibling"] = sibling
         opts["isPageBlock"] = isPageBlock
         opts["before"] = before

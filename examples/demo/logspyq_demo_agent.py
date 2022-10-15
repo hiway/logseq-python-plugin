@@ -15,8 +15,10 @@ async def block_demo(sid):
 
 
 @logseq.Editor.onInputSelectionEnd()
-async def input_demo(sid):
-    await logseq.Editor.insertAtEditingCursor("BOO!")
+async def input_demo(sid, event):
+    await logseq.Editor.createPage("BOING")
+    await logseq.Editor.appendBlockInPage("BOING", "Demo, World!")
+    await logseq.Editor.insertAtEditingCursor("[[BOING]]")
 
 
 @logseq.Editor.registerSlashCommand("appendBlockInPage")
