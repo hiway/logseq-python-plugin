@@ -1,5 +1,7 @@
 import logging
+from logspyq.api.app import App
 from logspyq.api.editor import Editor
+from logspyq.api.ui import UI
 from logspyq.server.logger import log
 from logspyq.server.server import PluginServer
 
@@ -19,7 +21,9 @@ class LSPluginUser:
         log.debug("Initializing LSPluginUser")
         self._server = server
         # Add proxies
+        self.App = App(self, "App")
         self.Editor = Editor(self, "Editor")
+        self.UI = UI(self, "UI")
         self.log = log
         self._schedules = {}
         self._events = {}
@@ -32,7 +36,10 @@ class LSPluginUser:
 
     async def register_callbacks_with_logseq(self):
         log.debug("Register callbacks with Logseq")
+
+        await self.App.register_callbacks_with_logseq()
         await self.Editor.register_callbacks_with_logseq()
+        await self.UI.register_callbacks_with_logseq()
         assert self._server
         for func, kwargs in self._schedules.items():
             self._server._scheduler.add_job(func, **kwargs)

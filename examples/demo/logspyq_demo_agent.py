@@ -22,7 +22,8 @@ async def input_demo(sid, event):
     # b = await logseq.Editor.getCurrentBlock()
     # await logseq.Editor.updateBlock(b.uuid, "YOU CALLED?")
     # await logseq.Editor.scrollToBlockInPage("Scrapbook", "634ac67f-f8ab-4e19-b755-272cda30a490")
-    print("input_demo", sid, event.text)
+    # print("input_demo", sid, event.text)
+    await logseq.UI.showMsg("Demo, World!", "success", timeout=5000)
 
 
 @logseq.Editor.registerSlashCommand("appendBlockInPage")
@@ -41,4 +42,4 @@ async def appendBlockInPage(sid):
 
 
 if __name__ == "__main__":
-    logseq.run(host="localhost", port=3000)
+    logseq.run(host="localhost", port=8484)
