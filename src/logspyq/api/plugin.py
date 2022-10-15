@@ -110,3 +110,6 @@ class LSPluginUser:
             )
         assert self._server
         self._server.run(host=host, port=port, debug=debug)
+
+    async def provideUI(self, key, slot, template):
+        await self.emit("provideUI", {"key": key, "slot": slot, "template": template})

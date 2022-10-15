@@ -95,6 +95,83 @@ async function main() {
     console.log("Registered input selection end:", event_name)
   })
 
+  socket.on("App.onBlockRendererSlotted", async (data) => {
+    const event_name = <string>data.event_name
+
+    logseq.App.onBlockRendererSlotted(async (e) => {
+      console.log("Block renderer slotted:", event_name, e)
+      socket.emit(event_name, e)
+    })
+    console.log("Registered block renderer slotted:", event_name)
+  })
+
+  socket.on("App.onCurrentGraphChanged", async (data) => {
+    const event_name = <string>data.event_name
+    logseq.App.onCurrentGraphChanged(
+      async (e) => {
+        console.log("Current graph changed:", event_name, e)
+        const graph = await logseq.App.getCurrentGraph()
+        socket.emit(event_name, graph)
+      },
+    )
+    console.log("Registered current graph changed:", event_name)
+  })
+
+  socket.on("App.onMacroRendererSlotted", async (data) => {
+    const event_name = <string>data.event_name
+
+    logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments } }) => {
+      console.log("Macro renderer slotted:", event_name, slot, arguments)
+      socket.emit(event_name, { slot, arguments })
+    })
+    console.log("Registered macro renderer slotted:", event_name)
+  })
+
+  socket.on("App.onPageHeadActionsSlotted", async (data) => {
+    const event_name = <string>data.event_name
+
+    logseq.App.onPageHeadActionsSlotted(async (e) => {
+      console.log("Page head actions slotted:", event_name, e)
+      socket.emit(event_name, e)
+    })
+    console.log("Registered page head actions slotted:", event_name)
+  })
+
+  socket.on("App.onRouteChanged", async (data) => {
+    const event_name = <string>data.event_name
+
+    logseq.App.onRouteChanged(async (e) => {
+      console.log("Route changed:", event_name, e)
+      socket.emit(event_name, e)
+    })
+    console.log("Registered route changed:", event_name)
+  })
+
+  socket.on("App.onSidebarVisibleChanged", async (data) => {
+    const event_name = <string>data.event_name
+
+    logseq.App.onSidebarVisibleChanged(async (e) => {
+      console.log("Sidebar visible changed:", event_name, e)
+      socket.emit(event_name, e)
+    })
+    console.log("Registered sidebar visible changed:", event_name)
+  })
+
+  socket.on("App.onThemeModeChanged", async (data) => {
+    const event_name = <string>data.event_name
+
+    logseq.App.onThemeModeChanged(async (e) => {
+      console.log("Theme mode changed:", event_name, e)
+      socket.emit(event_name, e)
+    })
+    console.log("Registered theme mode changed:", event_name)
+  })
+  
+
+
+
+
+
   async function executeFunctionByName(functionName, context, args) {
     var namespaces = functionName.split(".");
     var func = namespaces.pop();
@@ -135,6 +212,9 @@ async function main() {
       "Editor.registerSlashCommand",
       "Editor.registerBlockContextMenuItem",
       "Editor.onInputSelectionEnd",
+      "App.onBlockRendererSlotted",
+      "App.onCurrentGraphChanged",
+      "App.onMacroRendererSlotted",
     ].includes(event)) {
       console.log("Skipping event:", event)
       return

@@ -22,8 +22,8 @@ async def input_demo(sid, event):
     # b = await logseq.Editor.getCurrentBlock()
     # await logseq.Editor.updateBlock(b.uuid, "YOU CALLED?")
     # await logseq.Editor.scrollToBlockInPage("Scrapbook", "634ac67f-f8ab-4e19-b755-272cda30a490")
-    # print("input_demo", sid, event.text)
-    await logseq.UI.showMsg("Demo, World!", "success", timeout=5000)
+    # await logseq.UI.showMsg("Demo, World!", "success", timeout=5000)
+    print("input_demo", sid, event.text)
 
 
 @logseq.Editor.registerSlashCommand("appendBlockInPage")
@@ -31,6 +31,10 @@ async def appendBlockInPage(sid):
     # !! This does not work when in Journal mode
     page = await logseq.Editor.getCurrentPage()
     await logseq.Editor.appendBlockInPage(page.uuid, "Demo: appendBlockInPage")
+
+@logseq.App.onCurrentGraphChanged()
+async def onCurrentGraphChanged(sid, event):
+    print("onCurrentGraphChanged", sid, event)
 
 # @logseq.on_interval(seconds=5)
 # async def check_editing():
@@ -40,6 +44,29 @@ async def appendBlockInPage(sid):
 #     else:
 #         logseq.log.info("Not editing")
 
+@logseq.App.onMacroRendererSlotted()
+async def fancy_block(sid, event):
+    """
+    {{renderer :hello, World}}
+    """
+    t = event.arguments[0]
+    if t != ":hello":
+        print("block not :hello...", t)
+        return
+    name = event.arguments[1]
+    await logseq.provideUI(
+        key="h1-playground",
+        slot=event.slot,
+        template=f"""
+        <h2 style="color: red">Hello {name}!</h2>
+        """,
+    )
+
+@logseq.App.onRouteChanged()
+async def route_changed(sid, event):
+    print("route_changed", sid, event)
+    # status = await logseq.App.execGitCommand("status")
+    # print("git status", status)
 
 if __name__ == "__main__":
     logseq.run(host="localhost", port=8484)
