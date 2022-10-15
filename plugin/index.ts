@@ -6,20 +6,20 @@ const delay = ms => new Promise(res => setTimeout(res, ms));
 
 const settingsSchema: SettingSchemaDesc[] = [
   {
-    key: "socketioServerURL",
+    key: "serverURL",
     type: "string",
     default: "http://localhost:3000",
-    title: "SocketIO Server URL",
-    description: "The URL of the SocketIO server to connect to.",
+    title: "Python Plugin Server URL",
+    description: "Visit the URL in your browser for agent settings.",
   },
 ]
 
 async function settings_are_valid() {
-  const server_url = logseq.settings!["socketioServerURL"]
+  const server_url = logseq.settings!["serverURL"]
   if (!server_url) {
-    console.error("Server URL not configured for SocketIO.")
+    console.error("Server URL not configured for Python Plugin.")
     logseq.App.showMsg(
-      "Please configure server URL for SocketIO.",
+      "Please configure server URL for Python Plugin.",
       "error"
     )
     return false
@@ -34,11 +34,11 @@ async function main() {
 
   if (!await settings_are_valid()) {
     // Settings are invalid, exit
-    console.error("SocketIO settings are invalid, exiting.")
+    console.error("Python Plugin settings are invalid, exiting.")
     return
   }
 
-  const socket = io.connect(logseq.settings!["socketioServerURL"], {
+  const socket = io.connect(logseq.settings!["serverURL"], {
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
