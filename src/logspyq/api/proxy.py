@@ -3,9 +3,10 @@ from logspyq.server.logger import log
 
 
 class LogseqProxy(object):
-    def __init__(self, logseq) -> None:
+    def __init__(self, logseq, name: str) -> None:
         self._register_callbacks = {}
         self.logseq = logseq
+        self.name = name
 
     def register_callback(self, method: str, **data):
         log.info(f"Registering callback: {method} => {data}")
@@ -20,6 +21,12 @@ class LogseqProxy(object):
             if func and event_name:
                 log.info(f"!!!Registering callback: {method} => {data_minus_func} ({func})")
                 self.logseq.on(event_name)(func)
-                await self.logseq.emit(method, **data_minus_func)
+                await self.emit(method, **data_minus_func)
             else:
                 raise Exception(f"Invalid callback: {method} => {data} (func={func}, event_name={event_name})")
+
+    async def request(self, method: str, *args, **kwargs):
+        return await self.logseq.request(f"{self.name}.{method}", *args, **kwargs)
+
+    async def emit(self, method: str, *args, **kwargs):
+        return await self.logseq.emit(f"{self.name}.{method}", *args, **kwargs)

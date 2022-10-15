@@ -10,7 +10,7 @@ and opens a specified page in the right sidebar:
 ```python
 from logspeq.api import LogseqPlugin
 
-logseq = LogseqPlugin()
+logspyq = LogseqPlugin()
 
 
 @logseq.Editor.registerCommandPalette("Open ToDo in Sidebar", "ctrl+shift+t")

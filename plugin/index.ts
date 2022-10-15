@@ -74,6 +74,26 @@ async function main() {
     console.log("Registered slash command:", command, event_name)
   })
 
+  socket.on("Editor.registerBlockContextMenuItem", async (data) => {
+    const tag = <string>data.tag
+    const event_name = <string>data.event_name
+
+    logseq.Editor.registerBlockContextMenuItem(tag, async (...args) => {
+      console.log("Block context menu item clicked:", tag, event_name, args)
+      socket.emit(event_name)
+    })
+    console.log("Registered block context menu item:", tag, event_name)
+  })
+
+  socket.on("Editor.onInputSelectionEnd", async (data) => {
+    const event_name = <string>data.event_name
+
+    logseq.Editor.onInputSelectionEnd(async (e) => {
+      console.log("Input selection end:", event_name, e)
+      socket.emit(event_name, e)
+    })
+    console.log("Registered input selection end:", event_name)
+  })
 
   async function executeFunctionByName(functionName, context, args) {
     var namespaces = functionName.split(".");
@@ -108,11 +128,19 @@ async function main() {
     args.push(opts)
 
     // Skip existing handlers
-    await logseq.hideSettingsUI()
-    if (["connect", "disconnect", "useSettingsSchema", "Editor.registerSlashCommand"].includes(event)) {
+    if ([
+      "connect",
+      "disconnect",
+      "useSettingsSchema",
+      "Editor.registerSlashCommand",
+      "Editor.registerBlockContextMenuItem",
+      "Editor.onInputSelectionEnd",
+    ].includes(event)) {
       console.log("Skipping event:", event)
       return
     }
+    const current_page = await logseq.App.getCurrentPage()
+    console.log({current_page})
     console.log("Received event:", event, args)
     var result: any
     try {
@@ -132,7 +160,6 @@ async function main() {
       }
     }
   })
-
 
   console.log("Plugin: loaded.")
 }

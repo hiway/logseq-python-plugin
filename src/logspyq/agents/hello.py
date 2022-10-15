@@ -3,7 +3,7 @@ from logspyq.api import LSPluginUser
 logseq = LSPluginUser()
 
 
-@logseq.Editor.registerSlashCommand("/hello")
+@logseq.Editor.registerSlashCommand("hello")
 async def hello(sid):
     await logseq.Editor.insertAtEditingCursor("Hello, World!")
     cb = await logseq.Editor.getCurrentBlock()

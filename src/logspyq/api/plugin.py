@@ -23,7 +23,7 @@ class LSPluginUser:
             log.warning("No server provided, creating a new one")
             self._set_server(PluginServer(log_level=log_level, log_format=log_format, agent=self, agent_name="LSPluginUser"))
         # Add proxies
-        self.Editor = Editor(self)
+        self.Editor = Editor(self, "Editor")
         log.debug("Initialized LSPluginUser")
 
     def _set_server(self, server):
