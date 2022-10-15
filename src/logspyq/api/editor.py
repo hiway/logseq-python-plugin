@@ -1,3 +1,4 @@
+from re import A
 from box import Box
 from typing import Optional
 from logspyq.api.proxy import LogseqProxy
@@ -76,6 +77,17 @@ class Editor(LogseqProxy):
 
     async def deletePage(self, page: str):
         await self.emit("deletePage", page)
+
+    async def editBlock(self, srcBlock: str, pos: Optional[int] = None):
+        """
+        Edit a block.
+        
+        editBlock(srcBlock: BlockIdentity, opts?: { pos: number }): Promise<void>
+        """
+        if pos:
+            await self.emit("editBlock", srcBlock, {"pos": pos})
+        else:
+            await self.emit("editBlock", srcBlock)
 
     async def insertAtEditingCursor(self, text: str):
         await self.emit("insertAtEditingCursor", text)
