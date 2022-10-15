@@ -74,6 +74,9 @@ class Editor(LogseqProxy):
         }
         return await self.request("createPage", pageName, properties, **opts)
 
+    async def deletePage(self, page: str):
+        await self.emit("deletePage", page)
+
     async def insertAtEditingCursor(self, text: str):
         await self.emit("insertAtEditingCursor", text)
 
