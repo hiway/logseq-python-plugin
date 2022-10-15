@@ -1,0 +1,6 @@
+[project]
+name = "logspyq_demo_agent"
+version = "0.1.0"
+
+[project.entry-points."logspyq.agents"]
+logseq = "logspyq_demo_agent"
