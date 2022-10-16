@@ -20,6 +20,7 @@ class LSPluginUser:
         self.name = name
         self.description = description
         self.enabled = enabled
+        self.running = False
         self._register_callbacks = {
             # "Editor.registerSlashCommand", "slash-command-COMMAND-NAME"
         }
@@ -52,6 +53,7 @@ class LSPluginUser:
             for func, event in self._events.items():
                 self._server._sio.on(event)(func)
             log.info(f"Agent {self.name!r} registered callbacks with Logseq")
+            self.running = True
         else:
             log.warning(f"Agent {self.name!r} is not enabled, skipping.")
 

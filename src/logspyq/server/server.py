@@ -106,6 +106,7 @@ class PluginServer:
         """
         Load agents.
         """
+        assert self._db is not None
         log.debug("Discovering agents")
         # TODO: Make this configurable
         # - Do not load new agents, wait for user to enable them.
@@ -115,6 +116,16 @@ class PluginServer:
             for agent in self._agents.values():
                 log.info(f"Loading agent: {agent.name}, setting server instance")
                 agent._set_server(self)
+                enabled_key = f"agent:{agent.name}:enabled"
+                if enabled_key in self._db:
+                    enabled = self._db[enabled_key].decode("utf-8")
+                    if enabled == "True":
+                        log.info(f"Enabling agent: {agent.name}")
+                        agent.enabled = True
+                    else:
+                        log.info(f"Disabling agent: {agent.name}")
+                        agent.enabled = False
+                
             log.info(f"Found {len(self._agents)} agents.")
         else:
             log.info("Skipping agent discovery")
@@ -277,16 +288,14 @@ class PluginServer:
         """
         Toggle an agent's enabled state.
         """
+        assert self._db is not None
         agent = self._agents.get(name)
         if agent:
             agent.enabled = not agent.enabled
-            return await render_template_string("""
-    {% if agent.enabled %}
-    <span class="btn btn-xs bg-green-400 py-1 px-3 text-xs font-bold">active</span>
-    {% else %}
-    <span class="btn  btn-xs bg-red-400 py-1 px-3 text-xs font-bold">inactive</span>
-    {% endif %}
-                """, agent=agent)
+            self._db[f"agent:{name}:enabled"] = str(agent.enabled)
+            if agent.enabled:
+                await agent.register_callbacks_with_logseq()
+            return await render_template("_include/agent_list_item_status.html", agent=agent)
             # return await render_template("index.html", agent_list=self._agents)
         else:
             return "Agent not found", 404
