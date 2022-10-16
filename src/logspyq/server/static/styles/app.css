@@ -5,8 +5,8 @@
 }
 
 body {
-  display: grid;
   height: 100vh;
+  /* display: grid; */
   /* grid-template-columns: 54px 1fr;
   grid-template-rows: 1fr;
   grid-template-areas: "sidebar content"; */
