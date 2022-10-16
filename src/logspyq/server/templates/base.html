@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  {% block head %}
+  <title>{% block title %}{% endblock %} — Logspyq: Python for Logseq Plugins</title>
+  {% endblock %}
+  <link rel="icon" href="{{url_for('static', filename='images/logo.svg')}}" />
+  <link rel="stylesheet" href="{{url_for('static', filename='styles/app.css')}}" />
+  <script src="{{url_for('static', filename='scripts/tailwind.min.js')}}"></script>
+  <script src="{{url_for('static', filename='scripts/htmx.min.js')}}"></script>
+</head>
+
+<body>
+  {% include '_include/sidebar.html' %}
+  <div class="content">
+    {% block content %}
+    {% endblock %}
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,29 @@
+@layer components {
+  .sidebar {
+    transition: all .4s ease-in-out;
+  }
+}
+
+body {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  grid-template-rows: 1fr;
+  grid-template-areas: "sidebar content";
+  height: 100vh;
+}
+
+.sidebar {
+  grid-area: sidebar;
+  height: 100vh;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 100;
+}
+
+.content {  
+  grid-area: content;
+  overflow-y: auto;
+  height: 100vh;
+  /* padding-top: 1.6rem; */
+}
