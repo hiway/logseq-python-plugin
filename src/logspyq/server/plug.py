@@ -32,8 +32,10 @@ def discover_agents():
     agents = {}
     for name, agent in built_in_agents.items():
         if 'logseq' in dir(agent):
+            name = agent.logseq.name
             agents[name] = agent.logseq
         else:
+            name = agent.name
             agents[name] = agent
 
     return agents

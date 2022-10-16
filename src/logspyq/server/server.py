@@ -42,6 +42,7 @@ class PluginServer:
         self._quart_app = cors(self._quart_app)
         self._app = socketio.ASGIApp(self._sio, self._quart_app)
         self._quart_app.route("/")(self._index)
+        self._quart_app.route("/agent/<name>")(self._agent)
         self._sio.on("connect")(self._on_connect)
         self._sio.on("disconnect")(self._on_disconnect)
         self._sio.on("ready")(self._on_ready)
@@ -257,8 +258,11 @@ class PluginServer:
         """
         return await render_template("index.html", agent_list=self._agents)
     
-    async def _agent(self, agent_name):
+    async def _agent(self, name):
         """
         Render the agent page.
         """
-        return await render_template("agent.html", agent=self._agents.get(agent_name, None))
+        agent = self._agents.get(name)
+        print(self._agents)
+        print(agent)
+        return await render_template("agent.html", agent=agent)
