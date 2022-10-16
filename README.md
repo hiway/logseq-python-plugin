@@ -2,6 +2,8 @@
 
 Write Logseq Plugins in Python 3
 
+Spyke your Logseq with Python Plugins!
+
 ## Example
 
 Logseq plugin that responds to a keyboard shortcut 

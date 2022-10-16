@@ -11,21 +11,12 @@
       {{ agent.description | truncate(32) }}
     </a>
   </td>
-  <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static">
+  <td class="w-full lg:w-auto p-3 text-gray-800 text-center border border-b text-center block lg:table-cell relative lg:static"  hx-trigger="click" hx-post="{{url_for('_agent_enable_toggle', name=agent.name)}}">
     <span class="lg:hidden absolute top-0 left-0 bg-gray-200 px-2 py-1 text-xs">Status</span>
     {% if agent.enabled %}
-    <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">active</span>
+    <span class="btn btn-xs bg-green-400 py-1 px-3 text-xs font-bold">active</span>
     {% else %}
-    <span class="rounded bg-yellow-400 py-1 px-3 text-xs font-bold">inactive</span>
-    {% endif %}
-  </td>
-  <td class="w-full lg:w-auto p-3 text-center border border-b text-center block lg:table-cell relative lg:static">
-    <span class="lg:hidden absolute top-0 left-0 bg-gray-200 px-2 py-1 text-xs">Actions</span>
-    <a href="#" class="text-blue-400 hover:text-blue-600 underline">Settings</a>
-    {% if agent.enabled %}
-    <a href="#" class="text-blue-400 hover:text-blue-600 underline pl-6">Disable</a>
-    {% else %}
-    <a href="#" class="text-blue-400 hover:text-blue-600 underline pl-6">Enable</a>
+    <span class="btn  btn-xs bg-red-400 py-1 px-3 text-xs font-bold">inactive</span>
     {% endif %}
   </td>
 </tr>

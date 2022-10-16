@@ -13,7 +13,7 @@ import uvicorn
 import uvloop
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from box import Box, BoxList
-from quart import Quart, render_template
+from quart import Quart, render_template, render_template_string
 from quart_cors import cors
 from logspyq import agents
 
@@ -42,7 +42,9 @@ class PluginServer:
         self._quart_app = cors(self._quart_app)
         self._app = socketio.ASGIApp(self._sio, self._quart_app)
         self._quart_app.route("/")(self._index)
+        self._quart_app.route("/agent/")(self._agent_list)
         self._quart_app.route("/agent/<name>")(self._agent)
+        self._quart_app.route("/agent/<name>/enable/toggle", methods=["POST"])(self._agent_enable_toggle)
         self._sio.on("connect")(self._on_connect)
         self._sio.on("disconnect")(self._on_disconnect)
         self._sio.on("ready")(self._on_ready)
@@ -263,6 +265,28 @@ class PluginServer:
         Render the agent page.
         """
         agent = self._agents.get(name)
-        print(self._agents)
-        print(agent)
         return await render_template("agent.html", agent=agent)
+
+    async def _agent_list(self):
+        """
+        Return a list of agents.
+        """
+        return await render_template("index.html", agent_list=self._agents)
+
+    async def _agent_enable_toggle(self, name):
+        """
+        Toggle an agent's enabled state.
+        """
+        agent = self._agents.get(name)
+        if agent:
+            agent.enabled = not agent.enabled
+            return await render_template_string("""
+    {% if agent.enabled %}
+    <span class="btn btn-xs bg-green-400 py-1 px-3 text-xs font-bold">active</span>
+    {% else %}
+    <span class="btn  btn-xs bg-red-400 py-1 px-3 text-xs font-bold">inactive</span>
+    {% endif %}
+                """, agent=agent)
+            # return await render_template("index.html", agent_list=self._agents)
+        else:
+            return "Agent not found", 404

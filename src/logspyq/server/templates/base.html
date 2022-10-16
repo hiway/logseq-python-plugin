@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark light">
 
 <head>
   <meta charset="UTF-8">
@@ -10,13 +10,19 @@
   {% endblock %}
   <link rel="icon" href="{{url_for('static', filename='images/logo.svg')}}" />
   <link rel="stylesheet" href="{{url_for('static', filename='styles/app.css')}}" />
+  <link rel="stylesheet" href="{{url_for('static', filename='styles/daisyui.min.css')}}" />
   <script src="{{url_for('static', filename='scripts/tailwind.min.js')}}"></script>
   <script src="{{url_for('static', filename='scripts/htmx.min.js')}}"></script>
 </head>
 
 <body>
-  {% include '_include/sidebar.html' %}
-  <div class="content">
+  <!-- {% include '_include/sidebar.html' %} -->
+  <div class="content p-2">
+    <div class="bg-gray-200">
+    {% block breadcrumbs %}
+    {% endblock %}
+    </div>
+
     {% block content %}
     {% endblock %}
   </div>

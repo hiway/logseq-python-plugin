@@ -1,3 +1,11 @@
+{% block breadcrumbs %}
+<div class="text-sm breadcrumbs">
+  <ul>
+    <li><a href="{{ url_for('_index') }}">Logspyq Agents</a></li> 
+  </ul>
+</div>
+{% endblock %}
+
 <table class="border-collapse w-full">
   <thead>
     <tr>
@@ -7,8 +15,6 @@
         Description</th>
       <th class="p-1 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">
         Status</th>
-      <th class="p-1 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">
-        Actions</th>
     </tr>
   </thead>
   <tbody>
