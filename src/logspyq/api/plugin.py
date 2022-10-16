@@ -61,7 +61,10 @@ class LSPluginUser:
             for func, kwargs in self._schedules.items():
                 self._server._scheduler.add_job(func, **kwargs)
             for func, event in self._events.items():
-                self._server._sio.on(event)(func)
+                if event == "ready":
+                    self._server._signal_ready.connect(func)
+                else:
+                    self._server._sio.on(event)(func)
             log.debug(f"Registered callbacks for {self.name!r}")
             self.running = True
         else:
@@ -110,6 +113,20 @@ class LSPluginUser:
                     return await func(*args)
 
             self._events.update({async_inner: event})
+            return async_inner
+
+        return outer
+
+    def on_ready(self):
+        """
+        Decorator for handling the ready event.
+        """
+
+        def outer(func):
+            async def async_inner(**kwargs):
+                return await func()
+
+            self._events.update({async_inner: "ready"})
             return async_inner
 
         return outer

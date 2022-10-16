@@ -12,6 +12,7 @@ import socketio
 import uvicorn
 import uvloop
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from async_signals.dispatcher import Signal
 from box import Box, BoxList
 from quart import Quart, render_template, request
 from quart_cors import cors
@@ -51,6 +52,7 @@ class PluginServer:
         self._sio.on("ready")(self._on_ready)
         self._sio.on("graph")(self._on_graph)
         self._sio.on("*")(self._on_any)
+        self._signal_ready = Signal()
         if agent_name and agent:
             self._agents = {agent_name: agent}
         else:
@@ -168,6 +170,7 @@ class PluginServer:
         """
         log.info(f"Logseq instance {sid!r} ready")
         await self._register_agent_callbacks()
+        await self._signal_ready.send(sid)
 
     async def _on_graph(self, sid, data):
         """
@@ -265,7 +268,7 @@ class PluginServer:
 
         return outer
 
-    async def on(self, event: str):
+    def on(self, event: str):
         """
         Decorator for handling socket.io events.
         """
@@ -278,6 +281,21 @@ class PluginServer:
             return _async_inner
 
         return outer
+    
+    def on_ready(self):
+        """
+        Decorator for handling ready event.
+        """
+
+        def outer(func):
+            async def _async_inner(*args):
+                return await func(*args)
+
+            self._signal_ready.connect(_async_inner)
+            return _async_inner
+
+        return outer
+        
 
     async def _index(self):
         """

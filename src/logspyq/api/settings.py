@@ -49,7 +49,7 @@ def schema_as_dict(settings):
                 f"Expected type for setting {key} to be one of {', '.join([str(k) for k in PY_JS_TYPES.keys()])}, got: {type(value)}"
             )
         meta.update(
-            {"default": value, "key": key, "title": key.title(), "type": js_type}
+            {"default": value, "key": key, "title": key.replace("_", " ").title(), "type": js_type}
         )
         sett[key] = meta
     return [s for s in sett.values()]

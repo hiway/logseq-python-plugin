@@ -42,6 +42,7 @@ setup(
     ],
     install_requires=[
         'apscheduler',
+        'async-signals',
         'click',
         'keyvalue-sqlite==1.0.5',
         'python-box',
