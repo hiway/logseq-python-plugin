@@ -1,6 +1,7 @@
 [project]
 name = "telegram_agent"
 version = "0.1.0"
+dependencies = ["pyrogram", "tgcrypto"]
 
 [project.entry-points."logspyq.agents"]
 telegram_agent = "telegram_agent"
