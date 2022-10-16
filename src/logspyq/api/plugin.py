@@ -12,14 +12,13 @@ class LSPluginUser:
         self,
         name: str,
         description: str,
-        enabled: bool = False,
         server=None,
         log_level=logging.INFO,
         log_format="%(asctime)-15s %(levelname)-8s %(message)s",
     ) -> None:
         self.name = name
         self.description = description
-        self.enabled = enabled
+        self.enabled = False
         self.running = False
         self._register_callbacks = {
             # "Editor.registerSlashCommand", "slash-command-COMMAND-NAME"
