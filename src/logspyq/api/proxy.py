@@ -9,7 +9,6 @@ class LogseqProxy(object):
         self.name = name
 
     def register_callback(self, method: str, **data):
-        log.info(f"Registering callback: {method} => {data}")
         self._register_callbacks[method] = data
         return method
 
@@ -19,7 +18,7 @@ class LogseqProxy(object):
             event_name = data["event_name"]
             data_minus_func = {k: v for k, v in data.items() if k != "func"}
             if func and event_name:
-                log.info(f"!!!Registering callback: {method} => {data_minus_func} ({func})")
+                log.info(f"Register callback: {method} => {data_minus_func} ({func})")
                 self.logseq.on(event_name)(func)
                 await self.emit(method, **data_minus_func)
             else:

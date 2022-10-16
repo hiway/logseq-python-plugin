@@ -1,6 +1,6 @@
 from logspyq.api import LSPluginUser
 
-logseq = LSPluginUser()
+logseq = LSPluginUser(name="Hello Agent", description="Say hello to Logseq")
 
 
 @logseq.Editor.registerSlashCommand("hello")

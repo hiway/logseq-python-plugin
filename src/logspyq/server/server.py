@@ -15,6 +15,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from box import Box, BoxList
 from quart import Quart, render_template
 from quart_cors import cors
+from logspyq import agents
 
 
 from logspyq.server.logger import log
@@ -31,10 +32,6 @@ class PluginServer:
     ):
         self._log_level = log_level
         self._log_format = log_format
-        if agent_name and agent:
-            self._agents = {agent_name: agent}
-        else:
-            self._agents = {}
         self._graph = {}
         self._db = None
         self._db_path = Path(click.get_app_dir("logspyq")) / "logspyq.db"
@@ -50,6 +47,11 @@ class PluginServer:
         self._sio.on("ready")(self._on_ready)
         self._sio.on("graph")(self._on_graph)
         self._sio.on("*")(self._on_any)
+        if agent_name and agent:
+            self._agents = {agent_name: agent}
+        else:
+            self._agents = {}
+
 
     def run(self, host: str, port: int, debug: bool = False):
         """
@@ -108,27 +110,15 @@ class PluginServer:
         if not self._agents:
             self._agents = discover_agents()
             for agent in self._agents.values():
-                log.info(f"Loading agent: {agent}, setting server instance")
-                agent.logseq._set_server(self)
+                log.info(f"Loading agent: {agent.name}, setting server instance")
+                agent._set_server(self)
             log.info(f"Found {len(self._agents)} agents.")
         else:
             log.info("Skipping agent discovery")
 
     async def _register_agent_callbacks(self):
-        log.info(f"logseq server instance: {self.emit}")
-        for name, agent in self._agents.items():
-            log.debug(f"Registering callbacks for agent: {name}")
-            if 'logseq' in dir(agent):
-                await agent.logseq.register_callbacks_with_logseq()
-            else:
-                # Running in single-agent mode.
-                await agent.register_callbacks_with_logseq()
-
-    async def _index(self):
-        """
-        Render the index page.
-        """
-        return await render_template("index.html")
+        for _name, agent in self._agents.items():
+            await agent.register_callbacks_with_logseq()
 
     async def _on_connect(self, sid, _environ):
         """
@@ -260,3 +250,15 @@ class PluginServer:
             return _async_inner
 
         return outer
+
+    async def _index(self):
+        """
+        Render the index page.
+        """
+        return await render_template("index.html", agent_list=self._agents)
+    
+    async def _agent(self, agent_name):
+        """
+        Render the agent page.
+        """
+        return await render_template("agent.html", agent=self._agents.get(agent_name, None))

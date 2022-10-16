@@ -10,16 +10,21 @@ from logspyq.server.server import PluginServer
 class LSPluginUser:
     def __init__(
         self,
+        name: str,
+        description: str,
+        enabled: bool = False,
         server=None,
         log_level=logging.INFO,
         log_format="%(asctime)-15s %(levelname)-8s %(message)s",
     ) -> None:
+        self.name = name
+        self.description = description
+        self.enabled = enabled
         self._register_callbacks = {
             # "Editor.registerSlashCommand", "slash-command-COMMAND-NAME"
         }
         self._log_level = log_level
         self._log_format = log_format
-        log.debug("Initializing LSPluginUser")
         self._server = server
         # Add proxies
         self.App = App(self, "App")
@@ -29,7 +34,6 @@ class LSPluginUser:
         self.log = log
         self._schedules = {}
         self._events = {}
-        log.debug("Initialized LSPluginUser")
 
     def _set_server(self, server):
         self._server = server
@@ -37,17 +41,19 @@ class LSPluginUser:
         self.request = self._server.request
 
     async def register_callbacks_with_logseq(self):
-        log.debug("Register callbacks with Logseq")
-
-        await self.App.register_callbacks_with_logseq()
-        await self.DB.register_callbacks_with_logseq()
-        await self.Editor.register_callbacks_with_logseq()
-        await self.UI.register_callbacks_with_logseq()
-        assert self._server
-        for func, kwargs in self._schedules.items():
-            self._server._scheduler.add_job(func, **kwargs)
-        for func, event in self._events.items():
-            self._server._sio.on(event)(func)
+        if self.enabled:
+            await self.App.register_callbacks_with_logseq()
+            await self.DB.register_callbacks_with_logseq()
+            await self.Editor.register_callbacks_with_logseq()
+            await self.UI.register_callbacks_with_logseq()
+            assert self._server
+            for func, kwargs in self._schedules.items():
+                self._server._scheduler.add_job(func, **kwargs)
+            for func, event in self._events.items():
+                self._server._sio.on(event)(func)
+            log.info(f"Agent {self.name!r} registered callbacks with Logseq")
+        else:
+            log.warning(f"Agent {self.name!r} is not enabled, skipping.")
 
     def on_cron(self, **kwargs):
         """

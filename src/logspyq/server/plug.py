@@ -21,10 +21,19 @@ def discover_agents():
 
     from importlib.metadata import entry_points
     agent_entry_points = entry_points(group='logspyq.agents')
-    print("####", agent_entry_points)
     installed_agents = {
         ep.name: ep.load()
         for ep in agent_entry_points
     }
     built_in_agents.update(installed_agents)
-    return built_in_agents
+
+    # If 'logseq' exists in dir(agent), then extract that as the agent
+    # class. Otherwise, assume the module is the agent class.
+    agents = {}
+    for name, agent in built_in_agents.items():
+        if 'logseq' in dir(agent):
+            agents[name] = agent.logseq
+        else:
+            agents[name] = agent
+
+    return agents

@@ -22,7 +22,7 @@ def setting(
     )
 
 
-def setting_schema(_cls=None):
+def settings_schema(_cls=None):
     def wrap(cls):
         wrapped_cls = dataclass(cls)
         setattr(wrapped_cls, "schema", schema)
@@ -49,5 +49,4 @@ def schema(settings):
             {"default": value, "key": key, "title": key.title(), "type": js_type}
         )
         sett[key] = meta
-    print(sett)
     return [s for s in sett.values()]

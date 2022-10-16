@@ -1,0 +1,19 @@
+<table class="border-collapse w-full">
+  <thead>
+    <tr>
+      <th class="p-1 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">
+        Agent</th>
+      <th class="p-1 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">
+        Description</th>
+      <th class="p-1 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">
+        Status</th>
+      <th class="p-1 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 hidden lg:table-cell">
+        Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for agent in agent_list.values() %}
+      {% include "_include/agent_list_item.html" with context %}
+    {% endfor %}
+  </tbody>
+</table>

@@ -1,6 +1,6 @@
 from logspyq.api import LSPluginUser
 
-logseq = LSPluginUser()
+logseq = LSPluginUser(name="Bye Agent", description="Say bye to Logseq")
 
 @logseq.Editor.registerSlashCommand("bye")
 async def bye(sid):

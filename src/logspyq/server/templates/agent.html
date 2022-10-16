@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Agents{% endblock %}
+{% block content %}
+    {% if agent %}
+        {% include "_include/agent_list_item.html" with context %}
+    {% else %}
+        <h2>Agent not found.</h2>
+    {% endif %}
+{% endblock %}

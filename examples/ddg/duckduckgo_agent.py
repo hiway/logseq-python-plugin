@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 
 from logspyq.api import LSPluginUser
 
-logseq = LSPluginUser()
+logseq = LSPluginUser(name="DuckDuckGo", description="Search DuckDuckGo from Logseq")
 
 
 @logseq.Editor.registerSlashCommand("DDG Search")
@@ -18,14 +18,15 @@ async def slash_demo(sid):
     for result in results:
         await logseq.Editor.insertBlock(
             current_block.uuid,  # Source Block
-            f"[{result['title']}]({result['url']})",  # Content            
-                sibling= False,  # Indent below source block
-                properties= {  # Set properties
-                    "type": "search-result",
-                    "title": result["title"],
-                    "url": result["url"],                
+            f"[{result['title']}]({result['url']})",  # Content
+            sibling=False,  # Indent below source block
+            properties={  # Set properties
+                "type": "search-result",
+                "title": result["title"],
+                "url": result["url"],
             },
         )
+
 
 async def _search(query: str, max_results: int):
     """
@@ -54,6 +55,7 @@ async def _search(query: str, max_results: int):
     html = await _get(url)
     return await _parse(html, max_results)
 
+
 async def _get(url: str) -> str:
     """
     Perform an HTTP GET request using aiohttp and return the html.
@@ -70,6 +72,7 @@ async def _get(url: str) -> str:
             # if response.status != 200:
             #     raise LogseqAgentError(f"Failed to fetch {url}")
             return await response.text()
+
 
 async def _parse(html: str, max_results: int) -> List[dict]:
     """
@@ -102,7 +105,6 @@ async def _parse(html: str, max_results: int) -> List[dict]:
         if len(results) == max_results:
             break
     return results
-
 
 
 if __name__ == "__main__":
