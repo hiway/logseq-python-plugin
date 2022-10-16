@@ -13,7 +13,7 @@ import uvicorn
 import uvloop
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from box import Box, BoxList
-from quart import Quart, render_template, render_template_string
+from quart import Quart, render_template, request
 from quart_cors import cors
 from logspyq import agents
 
@@ -45,6 +45,7 @@ class PluginServer:
         self._quart_app.route("/agent/")(self._agent_list)
         self._quart_app.route("/agent/<name>")(self._agent)
         self._quart_app.route("/agent/<name>/enable/toggle", methods=["POST"])(self._agent_enable_toggle)
+        self._quart_app.route("/agent/<name>/setting", methods=["POST"])(self._agent_settings_update)
         self._sio.on("connect")(self._on_connect)
         self._sio.on("disconnect")(self._on_disconnect)
         self._sio.on("ready")(self._on_ready)
@@ -116,6 +117,7 @@ class PluginServer:
             for agent in self._agents.values():
                 log.debug(f"Loading agent: {agent.name}")
                 agent._set_server(self)
+                await self._load_agent_settings_from_db(agent)
                 enabled_key = f"agent:{agent.name}:enabled"
                 if enabled_key in self._db:
                     enabled = self._db[enabled_key].decode("utf-8")
@@ -129,6 +131,20 @@ class PluginServer:
             log.info(f"Found {len(self._agents)} agents: {', '.join(self._agents.keys()) }")
         else:
             log.info("Skipping agent discovery")
+    
+    async def _load_agent_settings_from_db(self, agent):
+        """
+        Load settings from database.
+        """
+        assert self._db is not None
+        if agent.settings is None:
+            log.debug(f"  {agent.name} has no settings")
+            return
+        log.debug(f"  {agent.name} has settings")
+        for key, _value in agent.settings.__dataclass_fields__.items():
+            db_key = f"agent:{agent.name}:setting:{key}"
+            if db_key in self._db:
+                setattr(agent.settings, key, self._db[db_key].decode("utf-8"))
 
     async def _register_agent_callbacks(self):
         for _name, agent in self._agents.items():
@@ -294,5 +310,23 @@ class PluginServer:
             if agent.enabled:
                 await agent.register_callbacks_with_logseq()
             return await render_template("_include/agent_list_item_status.html", agent=agent)
+        else:
+            return "Agent not found", 404
+        
+    async def _agent_settings_update(self, name):
+        """
+        Update an agent's setting.
+        """
+        assert self._db is not None
+        agent = self._agents.get(name)
+        if agent:
+            data = await request.form 
+            if data:
+                for key, value in data.items():
+                    self._db[f"agent:{name}:setting:{key}"] = value
+                await self._load_agent_settings_from_db(agent)
+                return "OK"
+            else:
+                return "No data", 400
         else:
             return "Agent not found", 404

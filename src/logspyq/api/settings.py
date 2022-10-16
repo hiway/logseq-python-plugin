@@ -18,6 +18,7 @@ def setting(
         default=default,
         metadata=dict(
             description=description,
+            default=default,
         ),
     )
 
