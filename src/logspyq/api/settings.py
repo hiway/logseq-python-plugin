@@ -25,7 +25,7 @@ def setting(
 def settings_schema(_cls=None):
     def wrap(cls):
         wrapped_cls = dataclass(cls)
-        setattr(wrapped_cls, "schema", schema)
+        setattr(wrapped_cls, "schema", schema_as_dict)
         return wrapped_cls
 
     if _cls is None:
@@ -34,7 +34,9 @@ def settings_schema(_cls=None):
     return wrap(_cls)
 
 
-def schema(settings):
+def schema_as_dict(settings):
+    if not settings:
+        return {}
     sett = asdict(settings)
     for key, value in sett.items():
         meta = dict(getattr(settings, "__dataclass_fields__")[key].metadata)

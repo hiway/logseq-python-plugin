@@ -1,9 +1,33 @@
+{% for setting in agent.settings_schema_as_dict %}
+{% if setting.type == 'boolean' %}
 <div class="form-control">
   <label class="label">
-    <span class="label-text">Telegram Bot Token</span>
+    <span class="label-text">{{ setting.description }}</span>
   </label>
   <label class="input-group">
-    <span>Bot-Token</span>
-    <input type="text" placeholder="..." class="input input-bordered" />
+    <span>{{ setting.title }}</span>
+    <input type="checkbox" placeholder="{{setting.default}}" class="input input-bordered" />
   </label>
 </div>
+{% elif setting.type == 'number' %}
+<div class="form-control">
+  <label class="label">
+    <span class="label-text">{{ setting.description }}</span>
+  </label>
+  <label class="input-group">
+    <span>{{ setting.title }}</span>
+    <input type="number" placeholder="{{setting.default}}" class="input input-bordered" />
+  </label>
+</div>
+{% else %}
+<div class="form-control">
+  <label class="label">
+    <span class="label-text">{{ setting.description }}</span>
+  </label>
+  <label class="input-group">
+    <span>{{ setting.title }}</span>
+    <input type="text" placeholder="{{setting.default}}" class="input input-bordered" />
+  </label>
+</div>
+{% endif %}
+{% endfor %}

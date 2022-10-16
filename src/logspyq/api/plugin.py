@@ -1,11 +1,13 @@
 import logging
+from dataclasses import asdict
+from typing import Optional, Any 
 from logspyq.api.app import App
 from logspyq.api.db import DB
 from logspyq.api.editor import Editor
 from logspyq.api.ui import UI
 from logspyq.server.logger import log
 from logspyq.server.server import PluginServer
-
+from logspyq.api.settings import schema_as_dict
 
 class LSPluginUser:
     def __init__(
@@ -20,6 +22,7 @@ class LSPluginUser:
         self.description = description
         self.enabled = False
         self.running = False
+        self.settings: Optional[Any] = None
         self._register_callbacks = {
             # "Editor.registerSlashCommand", "slash-command-COMMAND-NAME"
         }
@@ -34,6 +37,14 @@ class LSPluginUser:
         self.log = log
         self._schedules = {}
         self._events = {}
+
+    @property
+    def settings_as_dict(self):
+        return asdict(self.settings) if self.settings else {}
+    
+    @property
+    def settings_schema_as_dict(self):
+        return schema_as_dict(self.settings)
 
     def _set_server(self, server):
         self._server = server
@@ -115,7 +126,7 @@ class LSPluginUser:
                     log_level=self._log_level,
                     log_format=self._log_format,
                     agent=self,
-                    agent_name="LSPluginUser",
+                    agent_name=self.name,
                 )
             )
         assert self._server
