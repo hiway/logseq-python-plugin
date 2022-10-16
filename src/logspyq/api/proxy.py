@@ -18,7 +18,6 @@ class LogseqProxy(object):
             event_name = data["event_name"]
             data_minus_func = {k: v for k, v in data.items() if k != "func"}
             if func and event_name:
-                log.info(f"Register callback: {method} => {data_minus_func} ({func})")
                 self.logseq.on(event_name)(func)
                 await self.emit(method, **data_minus_func)
             else:

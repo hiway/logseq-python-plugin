@@ -52,10 +52,10 @@ class LSPluginUser:
                 self._server._scheduler.add_job(func, **kwargs)
             for func, event in self._events.items():
                 self._server._sio.on(event)(func)
-            log.info(f"Agent {self.name!r} registered callbacks with Logseq")
+            log.debug(f"Registered callbacks for {self.name!r}")
             self.running = True
         else:
-            log.warning(f"Agent {self.name!r} is not enabled, skipping.")
+            log.debug(f"Skipping {self.name!r}")
 
     def on_cron(self, **kwargs):
         """

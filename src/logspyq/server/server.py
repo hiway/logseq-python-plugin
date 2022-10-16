@@ -79,13 +79,13 @@ class PluginServer:
         handler.setFormatter(formatter)
         log.addHandler(handler)
 
+        log.info("Hi!")
         log.info(f"Starting server")
         try:
             log.info(f"Loading database from: {self._db_path}")
             self._db = dbm.open(str(self._db_path), "c")
             log.info("Starting scheduler")
             self._scheduler.start()
-            log.info("Loading agents in background")
             asyncio.ensure_future(self._load_agents())
             log.info("Starting server")
             uvconfig = uvicorn.config.Config(
@@ -98,35 +98,35 @@ class PluginServer:
         finally:
             log.info("Stopping scheduler")
             self._scheduler.shutdown()
+            await asyncio.sleep(0.2)
             if self._db:
                 log.info("Closing database")
                 self._db.close()
+                log.info("Database closed")
+            log.info("Bye!")
 
     async def _load_agents(self):
         """
         Load agents.
         """
         assert self._db is not None
-        log.debug("Discovering agents")
-        # TODO: Make this configurable
-        # - Do not load new agents, wait for user to enable them.
-        # - Load only enabled agents
         if not self._agents:
+            log.debug("Discovering agents")
             self._agents = discover_agents()
             for agent in self._agents.values():
-                log.info(f"Loading agent: {agent.name}, setting server instance")
+                log.debug(f"Loading agent: {agent.name}")
                 agent._set_server(self)
                 enabled_key = f"agent:{agent.name}:enabled"
                 if enabled_key in self._db:
                     enabled = self._db[enabled_key].decode("utf-8")
                     if enabled == "True":
-                        log.info(f"Enabling agent: {agent.name}")
+                        log.debug(f"  {agent.name} is enabled")
                         agent.enabled = True
                     else:
-                        log.info(f"Disabling agent: {agent.name}")
+                        log.debug(f"  {agent.name} is disabled")
                         agent.enabled = False
                 
-            log.info(f"Found {len(self._agents)} agents.")
+            log.info(f"Found {len(self._agents)} agents: {', '.join(self._agents.keys()) }")
         else:
             log.info("Skipping agent discovery")
 
@@ -138,27 +138,26 @@ class PluginServer:
         """
         Handle client connect.
         """
-        log.info(f"Client {sid} connected")
+        log.info(f"Logseq instance {sid!r} connected")
 
     async def _on_disconnect(self, sid):
         """
         Handle client disconnect.
         """
-        log.info(f"Client {sid} disconnected")
+        log.info(f"Logseq instance {sid!r} disconnected")
 
     async def _on_ready(self, sid):
         """
         Called when a client is ready to receive data.
         """
-        log.info(f"Client {sid} ready")
-        # await self.emit("agents", [k for k in self._agents.keys()])
+        log.info(f"Logseq instance {sid!r} ready")
         await self._register_agent_callbacks()
 
     async def _on_graph(self, sid, data):
         """
         Handle graph event.
         """
-        log.debug(f"Graph event: {data}")
+        log.info(f"Logseq graph: {data!r}")
         self._graph = Box(data)
 
     async def _on_any(self, sid, event: str, *args):
@@ -177,7 +176,6 @@ class PluginServer:
             **data: The data/opts to pass to the event.
         """
         data.update({"args": args})
-        log.debug(f"Sending event: {name} {data}")
         await self._sio.emit(name, data)
         log.debug(f"Sent event: {name} {data}")
 
@@ -296,6 +294,5 @@ class PluginServer:
             if agent.enabled:
                 await agent.register_callbacks_with_logseq()
             return await render_template("_include/agent_list_item_status.html", agent=agent)
-            # return await render_template("index.html", agent_list=self._agents)
         else:
             return "Agent not found", 404
