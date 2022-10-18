@@ -141,3 +141,6 @@ yarn-error.log
 *.session
 *.session-journal
 settings.json
+
+# failed attempts
+_attic

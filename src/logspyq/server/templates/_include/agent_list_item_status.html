@@ -1,0 +1,9 @@
+{% if agent.enabled and agent.running %}
+<span class="btn btn-xs bg-green-400 py-1 px-3 text-xs font-bold">active</span>
+{% elif agent.enabled and not agent.running %}
+<span class="btn btn-xs bg-yellow-400 py-1 px-3 text-xs font-bold">enabled but not running</span>
+{% elif not agent.enabled and agent.running %}
+<span class="btn btn-xs bg-orange-400 py-1 px-3 text-xs font-bold">disabled but running</span>
+{% else %}
+<span class="btn  btn-xs bg-red-400 py-1 px-3 text-xs font-bold">inactive</span>
+{% endif %}

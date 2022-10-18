@@ -1,0 +1,7 @@
+[project]
+name = "duckduckgo_agent"
+version = "0.1.0"
+dependencies = ["duckduckgo_search", "python-box"]
+
+[project.entry-points."logspyq.agents"]
+duckduckgo_agent = "duckduckgo_agent"

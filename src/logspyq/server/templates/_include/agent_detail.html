@@ -1,0 +1,21 @@
+{% block breadcrumbs %}
+<div class="text-sm breadcrumbs">
+  <ul>
+    <li><a href="{{ url_for('_index') }}">Logspyq Agents</a></li> 
+    <li>{{ agent.name }}</li> 
+  </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<article class="prose">
+  <h2>
+    {{ agent.name }}
+  </h2>
+  <p>
+    {{ agent.description }}
+  </p>
+
+  {% include "_include/agent_setting_list.html" with context %}
+</article>
+{% endblock %}

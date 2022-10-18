@@ -1,0 +1,18 @@
+{% for setting in agent.settings_schema_as_dict %}
+<div class="form-control">
+  <label class="label">
+    <span class="label-text">{{ setting.description }}</span>
+  </label>
+  <label class="input-group">
+  <span>{{ setting.title }}</span>
+  <input 
+    name="{{ setting.key }}"
+    placeholder="{{setting.default}}" 
+    value="{{agent.settings_as_dict.get(setting.key, '')}}"}}" 
+    class="input input-bordered" 
+    hx-trigger="keyup changed delay:500ms"" 
+    hx-post="{{ url_for('_agent_settings_update', name=agent.name) }}" 
+    />
+  </label>
+</div>
+{% endfor %}
