@@ -141,7 +141,7 @@ class Editor(LogseqProxy):
     async def getNextSiblingBlock(self, srcBlock: str) -> Box:
         return await self.request("getNextSiblingBlock", srcBlock)
     
-    async def getPage(self, srcPage: str, includeChildren: bool) -> Box:
+    async def getPage(self, srcPage: str, includeChildren: bool = False) -> Box:
         return await self.request("getPage", srcPage, {"includeChildren": includeChildren})
 
     async def getPageBlocksTree(self, page: str) -> Box:
@@ -251,7 +251,7 @@ class Editor(LogseqProxy):
             if block_.content == inboxName:
                 inboxBlock = block_
         if not inboxBlock:
-            before = page_blocks_tree[0].content is not ""
+            before = page_blocks_tree[0].content != ""
             inboxBlock = await self.insertBlock(
                 page_blocks_tree[0].uuid, inboxName, sibling=True, before=before
             )
