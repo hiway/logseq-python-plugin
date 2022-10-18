@@ -51,6 +51,22 @@ pip install -e .  # Install logspyq, remember the dot at the end
 
 > Note: You will need to run `source venv/bin/activate` when in the project directory, every time you open a new terminal.
 
+### Install Logseq Python Plugin
+
+```bash
+cd plugin
+yarn
+yarn build
+```
+
+1. Open Logseq Desktop App
+2. Open the `Plugins` tab
+3. Click `Load unpacked plugin`*
+4. Select the `plugin` directory in the project directory
+5. Click `Install`
+
+*In case you don't see the `Load unpacked plugin` button, you need to enable the `Developer Mode` in the `Settings > Advanced` tab.
+
 ## Usage
 
 ### Create a plugin
