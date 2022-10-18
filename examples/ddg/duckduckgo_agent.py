@@ -4,16 +4,23 @@ from urllib.parse import unquote
 import aiohttp
 from bs4 import BeautifulSoup
 
-from logspyq.api import LSPluginUser
+from logspyq.api import LSPluginUser, settings_schema, setting
 
+# --- Settings ---
+@settings_schema
+class Settings:
+    max_results: int = setting(5, "Maximum number of results to return")
+
+
+# --- Logseq Plugin ---
 logseq = LSPluginUser(name="DuckDuckGo", description="Search DuckDuckGo from Logseq")
+logseq.settings = Settings()
 
 
-@logseq.Editor.registerSlashCommand("DDG Search")
-async def slash_demo(sid):
+@logseq.Editor.registerSlashCommand("Search DuckDuckGo")
+async def search_duckduckgo(sid):
     query: str = await logseq.Editor.getEditingBlockContent()
-    max_results: int = 5
-    results = await _search(query, max_results)
+    results = await _search(query, int(logseq.settings.max_results))  # type: ignore
     current_block = await logseq.Editor.getCurrentBlock()
     for result in results:
         await logseq.Editor.insertBlock(
@@ -28,6 +35,7 @@ async def slash_demo(sid):
         )
 
 
+# --- DuckDuckGo API ---
 async def _search(query: str, max_results: int):
     """
     Perform a DuckDuckGo search and return a list of results.
@@ -44,12 +52,12 @@ async def _search(query: str, max_results: int):
             or the maximum number of results is invalid
     """
     # Validate input and configuration
-    # if not query:
-    #     raise LogseqAgentError("Search query is empty")
-    # if not (1 < max_results <= 10):
-    #     raise LogseqAgentError(
-    #         "Maximum number of results must be greater than 0 and less or equal to 10"
-    #     )
+    if not query:
+        await logseq.App.showMsg("Error: No search query provided.", "error")
+    if not (1 < max_results <= 10):
+        await logseq.App.showMsg(
+            "Error: Invalid maximum number of results provided.", "error"
+        )
     # Perform search
     url = f"https://duckduckgo.com/html/?q={query}"
     html = await _get(url)
@@ -69,8 +77,11 @@ async def _get(url: str) -> str:
     url = str(url)
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
-            # if response.status != 200:
-            #     raise LogseqAgentError(f"Failed to fetch {url}")
+            if response.status != 200:
+                await logseq.App.showMsg(
+                    f"Error: {response.status}, unable to fetch DuckDuckGo search results.",
+                    "error",
+                )
             return await response.text()
 
 
@@ -94,9 +105,7 @@ async def _parse(html: str, max_results: int) -> List[dict]:
         # Skip results with no title or URL
         if not title or not url:
             continue
-        # Replace "//duckduckgo.com/l/?uddg=" with "" in URL
         url = url.replace("//duckduckgo.com/l/?uddg=", "")
-        # URLDecode using urllib.parse.unquote
         url = unquote(url)
         # Remove any querystring parameters and cruft
         url = url.split("?")[0]
@@ -108,4 +117,5 @@ async def _parse(html: str, max_results: int) -> List[dict]:
 
 
 if __name__ == "__main__":
+    # Run in single-agent mode if executed directly
     logseq.run(host="localhost", port=3000)
