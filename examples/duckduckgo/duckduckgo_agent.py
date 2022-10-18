@@ -4,7 +4,7 @@ from urllib.parse import unquote
 import aiohttp
 from bs4 import BeautifulSoup
 
-from logspyq.api import LSPluginUser, settings_schema, setting
+from logspyq.api import LogseqPlugin, settings_schema, setting
 
 # --- Settings ---
 @settings_schema
@@ -13,7 +13,7 @@ class Settings:
 
 
 # --- Logseq Plugin ---
-logseq = LSPluginUser(name="DuckDuckGo", description="Search DuckDuckGo from Logseq")
+logseq = LogseqPlugin(name="DuckDuckGo", description="Search DuckDuckGo from Logseq")
 logseq.settings = Settings()
 
 

@@ -7,7 +7,7 @@ from box import Box
 from pyrogram.client import Client as TelegramClient
 from pyrogram import filters
 
-from logspyq.api import LSPluginUser, settings_schema, setting
+from logspyq.api import LogseqPlugin, settings_schema, setting
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +107,7 @@ class TelegramAgent(object):
 
 
 # --- Logseq Plugin ---
-logseq = LSPluginUser(
+logseq = LogseqPlugin(
     name="Telegram",
     description="Telegram for interstitial note-taking.",
 )

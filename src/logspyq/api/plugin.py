@@ -10,7 +10,7 @@ from logspyq.api.settings import schema_as_dict
 
 log = logging.getLogger(__name__)
 
-class LSPluginUser:
+class LogseqPlugin:
     def __init__(
         self,
         name: str,
