@@ -15,7 +15,8 @@ log = logging.getLogger(__name__)
 @settings_schema
 class Settings:
     app_id: str = setting(
-        "", "WolframAlpha App ID (https://developer.wolframalpha.com/portal/myapps/)"
+        default="",
+        description="WolframAlpha App ID (https://developer.wolframalpha.com/portal/myapps/)",
     )
     units: str = setting("metric", "Units (metric or imperial)")
     timeout: int = setting(5, "Timeout (seconds)")
@@ -52,7 +53,10 @@ async def search_wolfram_alpha(sid):
                 result = await resp.text()
                 current_block = await logseq.Editor.getCurrentBlock()
                 await logseq.Editor.insertBlock(
-                    current_block.uuid, result, sibling=False, properties={"source": "wolframalpha"}
+                    current_block.uuid,
+                    result,
+                    sibling=False,
+                    properties={"source": "wolframalpha"},
                 )
             else:
                 await logseq.App.showMsg(f"Error: {resp.status} {resp.reason}", "error")

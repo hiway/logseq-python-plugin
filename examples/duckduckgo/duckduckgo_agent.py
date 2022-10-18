@@ -5,7 +5,7 @@ from logspyq.api import LogseqPlugin, settings_schema, setting
 # --- Settings ---
 @settings_schema
 class Settings:
-    max_results: int = setting(5, "Maximum number of results to return")
+    max_results: int = setting(default=5, description="Maximum number of results to return")
 
 
 # --- Logseq Plugin ---

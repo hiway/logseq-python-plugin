@@ -17,10 +17,10 @@ Path(WORK_DIR).mkdir(parents=True, exist_ok=True)
 # --- Settings ---
 @settings_schema
 class Settings:
-    api_id: str = setting("", "Your Telegram API ID")
-    api_hash: str = setting("", "Your Telegram API Hash")
-    bot_token: str = setting("", "Telegram bot token (either this or phone)")
-    bot_admin: str = setting("", "Bot admin username")
+    api_id: str = setting(default="", description="Your Telegram API ID")
+    api_hash: str = setting(default="", description="Your Telegram API Hash")
+    bot_token: str = setting(default="", description="Telegram bot token (either this or phone)")
+    bot_admin: str = setting(default="", description="Bot admin username")
 
 
 # --- Telegram API ---
