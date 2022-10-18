@@ -36,6 +36,9 @@ async def on_ready():
 @logseq.Editor.registerSlashCommand("Search WolframAlpha")
 async def search_wolfram_alpha(sid):
     query = await logseq.Editor.getEditingBlockContent()
+    if not query:
+        await logseq.App.showMsg("No query found in current block.", "error")
+        return
     api_url = "https://api.wolframalpha.com/v1/result"
     payload = {
         "appid": logseq.settings.app_id,  # type: ignore
