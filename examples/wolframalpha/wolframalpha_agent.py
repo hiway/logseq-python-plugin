@@ -5,7 +5,6 @@ and insert results as blocks.
 """
 import aiohttp
 import logging
-from box import Box
 
 from logspyq.api import LogseqPlugin, setting, settings_schema
 
