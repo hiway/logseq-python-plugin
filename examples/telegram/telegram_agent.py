@@ -28,7 +28,7 @@ class TelegramAgent(object):
     def __init__(self, name, bot_admin, work_dir):
         self.name = name
         self.bot_admin = bot_admin
-        self.session_path = Path(work_dir) / f"{name}.session"
+        self.session_path = Path(work_dir) / f"{name.replace(' ', '-')}.session"
         self.client = None
 
     async def connect(
@@ -120,6 +120,26 @@ telegram = TelegramAgent(logseq.name, bot_admin=logseq.settings.bot_admin, work_
 
 @logseq.on_ready()
 async def on_ready():
+    if not logseq.settings.api_id:  # type: ignore
+        await logseq.App.showMsg(
+            "Telegram App ID is not set. Please set it in plugin settings.", "error"
+        )
+        return
+    if not logseq.settings.api_hash:  # type: ignore
+        await logseq.App.showMsg(
+            "Telegram App Hash is not set. Please set it in plugin settings.", "error"
+        )
+        return
+    if not logseq.settings.bot_token:  # type: ignore
+        await logseq.App.showMsg(
+            "Telegram Bot Token is not set. Please set it in plugin settings.", "error"
+        )
+        return
+    if not logseq.settings.bot_admin:  # type: ignore
+        await logseq.App.showMsg(
+            "Telegram Bot Admin is not set. Please set it in plugin settings.", "error"
+        )
+        return
     logger.info(f"Logseq plugin is ready")
     if Path(telegram.session_path).exists():
         logger.info(f"Telegram session exists at: {telegram.session_path}")
