@@ -11,7 +11,7 @@ from logspyq.api import LogseqPlugin, setting, settings_schema
 
 log = logging.getLogger(__name__)
 
-
+# --- Settings ---
 @settings_schema
 class Settings:
     app_id: str = setting(
@@ -22,6 +22,7 @@ class Settings:
     timeout: int = setting(5, "Timeout (seconds)")
 
 
+# --- Logseq Plugin ---
 logseq = LogseqPlugin(name="WolframAlpha", description="Query WolframAlpha from Logseq")
 logseq.settings = Settings()
 
@@ -63,4 +64,5 @@ async def search_wolfram_alpha(sid):
 
 
 if __name__ == "__main__":
+    # Run in single-agent mode if executed directly
     logseq.run(host="localhost", port=8484, debug=True)
