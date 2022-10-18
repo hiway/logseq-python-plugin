@@ -107,7 +107,7 @@ class TelegramAgent(object):
             try:
                 logger.info(f"Telegram client: received text message: {message.text}")
                 text = timestamped_text(message.text)
-                if logseq.settings.link_page_names.lower() == "true":  # type: ignore
+                if logseq.settings.link_page_names:  # type: ignore
                     text = await link_page_names(text)
                 await logseq.Editor.appendBlockToJournalInbox(
                     "[[Log]]", Box(dict(content=text))
@@ -141,23 +141,22 @@ async def link_page_names(text: str) -> str:
     """
     Converts page names in the format [[Page Name]] to links.
     """
+    skip_names = {"to", "do", "this", "here", "now", "later", "soon", "todo", "doing", "done", "link", "page", "pages"}
     all_pages = await logseq.Editor.getAllPages()
-    # collect all page names and sort them with longest first
-    page_names = sorted(
-        [page.name for page in all_pages], key=lambda x: len(x), reverse=True
-    )
+    # collect all page names 
+    page_names = [page.name for page in all_pages]
     # collect all aliases from page properties
     aliases = []
     for page in all_pages:
         if "properties" in page:
             if "aliases" in page.properties:
                 aliases.extend(page.properties.aliases)
-    # sort aliases with longest first
-    aliases = sorted(aliases, key=lambda x: len(x), reverse=True)
-    # extend page names with aliases
     page_names.extend(aliases)
+    page_names = sorted(page_names, key=lambda x: len(x), reverse=True)
     for page_name in page_names:
         if "[" in page_name or "]" in page_name:
+            continue
+        if page_name.lower() in skip_names:
             continue
         text = re.sub(
             r"\b" + page_name + r"\b",
