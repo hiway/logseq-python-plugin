@@ -137,13 +137,28 @@ def timestamped_text(text: str) -> str:
     """
     return f"{datetime.now().strftime('%H:%M')} - {text}"
 
+
 async def link_page_names(text: str) -> str:
     """
     Converts page names in the format [[Page Name]] to links.
     """
-    skip_names = {"to", "do", "this", "here", "now", "later", "soon", "todo", "doing", "done", "link", "page", "pages"}
+    skip_names = {
+        "to",
+        "do",
+        "this",
+        "here",
+        "now",
+        "later",
+        "soon",
+        "todo",
+        "doing",
+        "done",
+        "link",
+        "page",
+        "pages",
+    }
     all_pages = await logseq.Editor.getAllPages()
-    # collect all page names 
+    # collect all page names
     page_names = [page.name for page in all_pages]
     # collect all aliases from page properties
     aliases = []
