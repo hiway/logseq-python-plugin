@@ -294,7 +294,7 @@ class App(LogseqProxy):
         return await self.request("setZoomFactor", factor)
 
     async def showMsg(
-        self, content: str, status: str, key: Optional[str] = None, timeout: int = 3000
+        self, content: str, status: str = "success", key: Optional[str] = None, timeout: int = 3000
     ):
         """showMsg(content: string, status?: string, opts?: Partial<UIMsgOptions>): Promise<string>"""
         return await self.emit(
