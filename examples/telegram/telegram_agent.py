@@ -11,7 +11,16 @@ from logspyq.api import LSPluginUser, settings_schema, setting
 
 logger = logging.getLogger(__name__)
 
+# --- Settings ---
+@settings_schema
+class Settings:
+    api_id: str = setting("", "Your Telegram API ID")
+    api_hash: str = setting("", "Your Telegram API Hash")
+    bot_token: str = setting("", "Telegram bot token (either this or phone)")
+    bot_admin: str = setting("", "Bot admin username")
 
+
+# --- Telegram API ---
 class TelegramAgent(object):
     def __init__(self, name, bot_admin, work_dir):
         self.name = name
@@ -97,14 +106,7 @@ class TelegramAgent(object):
         return tg
 
 
-@settings_schema
-class Settings:
-    api_id: str = setting("", "Your Telegram API ID")
-    api_hash: str = setting("", "Your Telegram API Hash")
-    bot_token: str = setting("", "Telegram bot token (either this or phone)")
-    bot_admin: str = setting("", "Bot admin username")
-
-
+# --- Logseq Plugin ---
 logseq = LSPluginUser(
     name="Telegram",
     description="Telegram for interstitial note-taking.",
@@ -168,4 +170,5 @@ async def send_via_telegram(sid):
 
 
 if __name__ == "__main__":
+    # Run in single-agent mode if executed directly
     logseq.run(host="localhost", port=8484, debug=True)
