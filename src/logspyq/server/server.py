@@ -4,7 +4,6 @@ Socket.IO server for logspyq plugins.
 import asyncio
 import dbm
 import logging
-
 from pathlib import Path
 
 import click
@@ -16,18 +15,17 @@ from async_signals.dispatcher import Signal
 from box import Box, BoxList
 from quart import Quart, render_template, request
 from quart_cors import cors
-from logspyq import agents
 
-
-from logspyq.server.logger import log
 from logspyq.server.plug import discover_agents
+
+log = logging.getLogger(__name__)
 
 
 class PluginServer:
     def __init__(
         self,
         log_level: int = logging.INFO,
-        log_format: str = "%(asctime)-15s %(levelname)-8s %(message)s",
+        log_format: str = "%(levelname)s %(name)35s:%(lineno)03d - %(funcName)-20s - %(message)s",
         agent_name = "",
         agent = None,
     ):
@@ -92,7 +90,11 @@ class PluginServer:
             asyncio.ensure_future(self._load_agents())
             log.info("Starting server")
             uvconfig = uvicorn.config.Config(
-                self._app, host=host, port=port, debug=debug, reload=debug
+                self._app, host=host, port=port, debug=debug, reload=debug, log_level="info", log_config={
+                    "version": 1,
+                    "disable_existing_loggers": False,
+                    "propagate": True,
+                }
             )
             server = uvicorn.Server(uvconfig)
             await server.serve()

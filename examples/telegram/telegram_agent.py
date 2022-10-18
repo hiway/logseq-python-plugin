@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from traceback import print_exc
 from typing import Union
@@ -8,6 +9,7 @@ from pyrogram import filters
 
 from logspyq.api import LSPluginUser, settings_schema, setting
 
+logger = logging.getLogger(__name__)
 
 class TelegramAgent(object):
     def __init__(self, name, bot_admin, work_dir):
@@ -25,7 +27,7 @@ class TelegramAgent(object):
         assert self.client is None, "Already connected?"
         if Path(self.session_path).exists():
             self.client = await self._create_telegram_client()
-            print(f"Telegram client: connecting to existing session...")
+            logger.info(f"Telegram client: connecting to existing session...")
         else:
             if not (api_id and api_hash and bot_token):
                 raise Exception("Auth Required")
@@ -33,18 +35,18 @@ class TelegramAgent(object):
                 self.client = await self._create_telegram_client(
                     api_id=api_id, api_hash=api_hash, bot_token=bot_token
                 )
-        print(f"Telegram client: connecting...")
+        logger.info(f"Telegram client: connecting...")
         await self.client.start()
         self.status = "connected"
-        print(f"Telegram client: connected")
+        logger.info(f"Telegram client: connected")
 
     async def disconnect(self):
         assert self.client
-        print(f"Telegram client: disconnecting...")
+        logger.info(f"Telegram client: disconnecting...")
         await self.client.stop()
         self.status = "disconnected"
         self.client = None
-        print(f"Telegram client: disconnected")
+        logger.info(f"Telegram client: disconnected")
 
     async def _create_telegram_client(
         self,
@@ -60,7 +62,7 @@ class TelegramAgent(object):
         workdir = str(Path(self.session_path).parent.absolute())
         tg = TelegramClient(
             self.name,
-            api_id=api_id,   # type: ignore
+            api_id=api_id,  # type: ignore
             api_hash=api_hash,  # type: ignore
             bot_token=bot_token,  # type: ignore
             workdir=workdir,
@@ -72,28 +74,24 @@ class TelegramAgent(object):
             & filters.user(logseq.settings.bot_admin)  # type: ignore
         )
         async def welcome(client, message):
-            print(f"Telegram client: received text message: {message.text}")
+            logger.info(f"Telegram client: received text message: {message.text}")
             await message.reply(
                 "Welcome to Telegram for Logseq\n\n"
-                "Send text messages, voice notes or photos to this chat, "
-                "and they will be entered into your Logseq daily journal "
-                "with automatic timestamps (interstitial journaling)."
+                "Send text messages to this chat to "
+                "append to your Logseq daily journal."
             )
 
         @tg.on_message(filters.private & filters.user(logseq.settings.bot_admin))  # type: ignore
-        async def echo(client, message):
+        async def append_to_journal(client, message):
             try:
-                print(f"Telegram client: received text message: {message.text}")
-                # current_block = await logseq.Editor.getCurrentBlock()
-                # if current_block and current_block.uuid:
-                #     await logseq.Editor.insertBlock(current_block.uuid, message.text)
-                # else:
-                await logseq.Editor.appendBlockToJournalInbox("[[Log]]", Box(dict(content=message.text)))
-                await message.reply(f"Published: {message.text}")
+                logger.info(f"Telegram client: received text message: {message.text}")
+                await logseq.Editor.appendBlockToJournalInbox(
+                    "[[Log]]", Box(dict(content=message.text))
+                )
+                await message.reply(f"Added to journal:\n{message.text}")
             except Exception as e:
                 print_exc()
                 await message.reply(f"Error: {e}")
-
 
         return tg
 
@@ -116,36 +114,60 @@ telegram = TelegramAgent(logseq.name, bot_admin=logseq.settings.bot_admin, work_
 
 @logseq.on_ready()
 async def on_ready():
-    print(f"Logseq: ready")
+    logger.info(f"Logseq: ready")
     if Path(telegram.session_path).exists():
-        print(f"Telegram session exists at: {telegram.session_path}")
+        logger.info(f"Telegram session exists at: {telegram.session_path}")
         await telegram.connect()
-        print(f"Telegram agent connected.1")
+        logger.info(f"Telegram agent: connected")
     else:
         if (
             logseq.settings.api_id  # type: ignore
             and logseq.settings.api_hash  # type: ignore
             and logseq.settings.bot_token  # type: ignore
         ):
-            print(f"Telegram session does not exist, creating agent...")
+            logger.info(f"Telegram session does not exist, creating agent...")
             await telegram.connect(
                 api_id=logseq.settings.api_id,  # type: ignore
                 api_hash=logseq.settings.api_hash,  # type: ignore
                 bot_token=logseq.settings.bot_token,  # type: ignore
             )
-            print(f"Telegram agent connected.2")
+            logger.info(f"Telegram agent connected.2")
         else:
-            print(
+            logger.info(
                 f"Telegram session nor configuration not found, Telegram agent not connected!"
             )
 
 
 @logseq.Editor.registerSlashCommand("Send via Telegram")
 async def send_via_telegram(sid):
-    block = await logseq.Editor.getCurrentBlock()
-    await logseq.Editor.insertBlock(
-        block.uuid, f"Hello, {logseq.settings.bot_admin}!", sibling=False  # type: ignore
-    )
+    status = "unknown"
+    logger.info(f"Logseq: sending via Telegram")
+    current_block = await logseq.Editor.getCurrentBlock()
+    if not current_block:
+        status = "Error: No current block."
+        logger.info(f"Logseq: no current block")
+        return
+    elif not current_block.content:
+        status = "Error: Current block is empty."
+        logger.info(f"Logseq: current block has no content")
+        return
+    elif telegram.client:
+        await telegram.client.send_message(
+            logseq.settings.bot_admin,  # type: ignore
+            current_block.content,
+        )
+        status = "Sent!"
+        logger.info(f"Logseq: sent via Telegram")
+        await logseq.Editor.updateBlock(
+            current_block.uuid,
+            content=f"{current_block.content}\ntelegram: {status}",
+        )
+
+    else:
+        status = "Error: Telegram agent not connected."
+        await logseq.App.showMsg(
+            "Telegram not connected. Please connect to Telegram first.", "error"
+        )
 
 
 if __name__ == "__main__":

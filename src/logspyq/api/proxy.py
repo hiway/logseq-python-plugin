@@ -1,5 +1,7 @@
+import logging
 from typing import Callable
-from logspyq.server.logger import log
+
+log = logging.getLogger(__name__)
 
 
 class LogseqProxy(object):

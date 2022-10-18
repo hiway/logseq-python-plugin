@@ -5,9 +5,10 @@ from logspyq.api.app import App
 from logspyq.api.db import DB
 from logspyq.api.editor import Editor
 from logspyq.api.ui import UI
-from logspyq.server.logger import log
 from logspyq.server.server import PluginServer
 from logspyq.api.settings import schema_as_dict
+
+log = logging.getLogger(__name__)
 
 class LSPluginUser:
     def __init__(
@@ -34,7 +35,7 @@ class LSPluginUser:
         self.DB = DB(self, "DB")
         self.Editor = Editor(self, "Editor")
         self.UI = UI(self, "UI")
-        self.log = log
+        self.log = logging.getLogger(__name__)
         self._schedules = {}
         self._events = {}
 
