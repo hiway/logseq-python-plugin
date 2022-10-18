@@ -143,4 +143,4 @@ yarn-error.log
 settings.json
 
 # failed attempts
-_attic
+_attic/
