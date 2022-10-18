@@ -3,6 +3,7 @@ from pathlib import Path
 from traceback import print_exc
 from typing import Union
 
+import click
 from box import Box
 from pyrogram.client import Client as TelegramClient
 from pyrogram import filters
@@ -10,6 +11,8 @@ from pyrogram import filters
 from logspyq.api import LogseqPlugin, settings_schema, setting
 
 logger = logging.getLogger(__name__)
+WORK_DIR = click.get_app_dir("logspyq-telegram-agent")
+Path(WORK_DIR).mkdir(parents=True, exist_ok=True)
 
 # --- Settings ---
 @settings_schema
@@ -112,7 +115,7 @@ logseq = LogseqPlugin(
     description="Telegram for interstitial note-taking.",
 )
 logseq.settings = Settings()
-telegram = TelegramAgent(logseq.name, bot_admin=logseq.settings.bot_admin, work_dir=".")
+telegram = TelegramAgent(logseq.name, bot_admin=logseq.settings.bot_admin, work_dir=WORK_DIR)
 
 
 @logseq.on_ready()
