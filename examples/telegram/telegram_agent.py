@@ -151,25 +151,26 @@ async def send_via_telegram(sid):
     current_block = await logseq.Editor.getCurrentBlock()
     if not current_block:
         status = "Error: No current block."
-        logger.info(f"no current block")
+        logger.info(status)
         await logseq.App.showMsg(status, "error")
         return
     elif not current_block.content:
         status = "Error: Current block is empty."
-        logger.info(f"current block has no content")
+        logger.info(status)
         await logseq.App.showMsg(status, "error")
         return
-    elif telegram.client:
+    elif not telegram.client:
+        status = "Error: Telegram agent not connected."
+        logger.info(status)
+        await logseq.App.showMsg(status, "error")
+    else:
         await telegram.client.send_message(
             logseq.settings.bot_admin,  # type: ignore
             current_block.content,
         )
         status = f"Sent to {logseq.settings.bot_admin}!"  # type: ignore
-        logger.info(f"sent via Telegram")
+        logger.info(status)
         await logseq.App.showMsg(status, "success")
-    else:
-        status = "Error: Telegram agent not connected."
-        await logseq.App.showMsg(status, "error")
 
 
 if __name__ == "__main__":
