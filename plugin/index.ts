@@ -222,6 +222,18 @@ async function main() {
   //   console.log("Registered DB changed:", event_name)
   // })
 
+  socket.on("DB.datascriptQuery", async (data, callback) => {
+    // datascriptQuery<T>(query: string, ...inputs: any[]): Promise<T>
+    const query = <string>data.query
+    const inputs = <any[]>data.inputs
+    
+    // IDE shows: IDBProxy.datascriptQuery: <any>(query: string) => Promise<any>
+    console.log("DB.datascriptQuery:", data, query, inputs)
+    const result = await logseq.DB.datascriptQuery(query)
+    console.log("DB datascript query:", query, inputs, result)
+    callback(result)
+  })
+
   async function executeFunctionByName(functionName, context, args) {
     var namespaces = functionName.split(".");
     var func = namespaces.pop();
@@ -269,6 +281,7 @@ async function main() {
       "App.registerCommandPalette",
       "DB.onChanged",
       "DB.onBlockChanged",
+      "DB.datascriptQuery",
     ].includes(event)) {
       console.log("Skipping event:", event)
       return

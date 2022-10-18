@@ -5,8 +5,8 @@ from logspyq.api.proxy import LogseqProxy
 from .utils import mkbox
 
 class DB(LogseqProxy):
-    async def datascriptQuery(self, query: str, inputs: List[str]):
-        return await self.request("datascriptQuery", query, inputs)
+    async def datascriptQuery(self, query: str, inputs: List[str] = None):  # type: ignore
+        return await self.request("datascriptQuery", query=query, inputs=inputs)
 
     async def q(self, dsl: str):
         return await self.request("q", dsl)

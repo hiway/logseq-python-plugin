@@ -1,4 +1,4 @@
-from re import A
+from datetime import datetime
 from box import Box
 from typing import Optional
 from logspyq.api.proxy import LogseqProxy
@@ -226,4 +226,50 @@ class Editor(LogseqProxy):
     
     async def updateBlock(self, srcBlock: str, content: str, **properties):
         await self.emit("updateBlock", srcBlock, content, {"properties": properties})
-        
+
+    async def appendBlockToJournalInbox(self, inboxName: str, block: Box):
+        today = datetime.now().strftime("%Y%m%d")
+        result = await self.logseq.DB.datascriptQuery(
+            f"""
+        [:find (pull ?p [*])
+         :where
+         [?b :block/page ?p]
+         [?p :block/journal? true]
+         [?p :block/journal-day ?d]
+         [(= ?d {today})]]
+         """.strip().replace("\n", " ").replace("  ", " ")
+        )
+        result = sum(result, [])
+        if len(result) == 0:
+            raise Exception("No journal page found")
+        page_name = result[0]["name"]
+        page_blocks_tree = await self.getPageBlocksTree(page_name)
+        inboxBlock = None
+        if not inboxName:
+            inboxBlock = page_blocks_tree[0]
+        for block_ in page_blocks_tree:
+            if block_.content == inboxName:
+                inboxBlock = block_
+        if not inboxBlock:
+            before = page_blocks_tree[0].content is not ""
+            inboxBlock = await self.insertBlock(
+                page_blocks_tree[0].uuid, inboxName, sibling=True, before=before
+            )
+        inboxBlockTree = await self.getBlock(inboxBlock.uuid, True)
+        targetBlock = None
+        if inboxBlockTree.children:
+            targetBlock = inboxBlockTree.children[-1]
+            await self.insertBlock(
+                targetBlock.uuid,
+                content=block.content,
+                properties=block.properties if "properties" in block else {},
+                sibling=True,
+            )
+        else:
+            targetBlock = inboxBlockTree
+            await self.insertBlock(
+                targetBlock.uuid,
+                content=block.content,
+                properties=block.properties if "properties" in block else {},
+                sibling=False,
+            )
