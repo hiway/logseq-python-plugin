@@ -1,11 +1,6 @@
-from logspyq.api import LogseqPlugin, settings_schema, setting
-from logspyq.server.utils import ensure_python_packages
-
-ensure_python_packages("python-box", "duckduckgo_search")
-
 from box import Box
 from duckduckgo_search import ddg
-
+from logspyq.api import LogseqPlugin, settings_schema, setting
 
 # --- Settings ---
 @settings_schema
