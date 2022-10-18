@@ -1,4 +1,6 @@
 import logging
+import re
+from datetime import datetime
 from pathlib import Path
 from traceback import print_exc
 from typing import Union
@@ -19,8 +21,14 @@ Path(WORK_DIR).mkdir(parents=True, exist_ok=True)
 class Settings:
     api_id: str = setting(default="", description="Your Telegram API ID")
     api_hash: str = setting(default="", description="Your Telegram API Hash")
-    bot_token: str = setting(default="", description="Telegram bot token (either this or phone)")
+    bot_token: str = setting(
+        default="", description="Telegram bot token (either this or phone)"
+    )
     bot_admin: str = setting(default="", description="Bot admin username")
+    link_page_names: bool = setting(
+        default=True,
+        description="Link page names in messages (e.g. [[Page Name]])",
+    )
 
 
 # --- Telegram API ---
@@ -98,8 +106,11 @@ class TelegramAgent(object):
         async def append_to_journal(client, message):
             try:
                 logger.info(f"Telegram client: received text message: {message.text}")
+                text = timestamped_text(message.text)
+                if logseq.settings.link_page_names.lower() == "true":  # type: ignore
+                    text = await link_page_names(text)
                 await logseq.Editor.appendBlockToJournalInbox(
-                    "[[Log]]", Box(dict(content=message.text))
+                    "[[Log]]", Box(dict(content=text))
                 )
                 await message.reply(f"Added to journal:\n{message.text}")
             except Exception as e:
@@ -115,7 +126,46 @@ logseq = LogseqPlugin(
     description="Telegram for interstitial note-taking.",
 )
 logseq.settings = Settings()
-telegram = TelegramAgent(logseq.name, bot_admin=logseq.settings.bot_admin, work_dir=WORK_DIR)
+telegram = TelegramAgent(
+    logseq.name, bot_admin=logseq.settings.bot_admin, work_dir=WORK_DIR
+)
+
+
+def timestamped_text(text: str) -> str:
+    """
+    Adds timestamp in the format "HH:MM - " to the beginning of the text.
+    """
+    return f"{datetime.now().strftime('%H:%M')} - {text}"
+
+async def link_page_names(text: str) -> str:
+    """
+    Converts page names in the format [[Page Name]] to links.
+    """
+    all_pages = await logseq.Editor.getAllPages()
+    # collect all page names and sort them with longest first
+    page_names = sorted(
+        [page.name for page in all_pages], key=lambda x: len(x), reverse=True
+    )
+    # collect all aliases from page properties
+    aliases = []
+    for page in all_pages:
+        if "properties" in page:
+            if "aliases" in page.properties:
+                aliases.extend(page.properties.aliases)
+    # sort aliases with longest first
+    aliases = sorted(aliases, key=lambda x: len(x), reverse=True)
+    # extend page names with aliases
+    page_names.extend(aliases)
+    for page_name in page_names:
+        if "[" in page_name or "]" in page_name:
+            continue
+        text = re.sub(
+            r"\b" + page_name + r"\b",
+            f"[[{page_name}]]",
+            text,
+            flags=re.IGNORECASE,
+        )
+    return text
 
 
 @logseq.on_ready()
