@@ -55,3 +55,7 @@ async def search_wolfram_alpha(sid):
                 )
             else:
                 await logseq.App.showMsg(f"Error: {resp.status} {resp.reason}", "error")
+
+
+if __name__ == "__main__":
+    logseq.run(host="localhost", port=8484, debug=True)

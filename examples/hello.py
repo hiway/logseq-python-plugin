@@ -1,6 +1,7 @@
+import logging
 from logspyq.api import LogseqPlugin
 
-logseq = LogseqPlugin(name="Hello Agent", description="Say hello to Logseq")
+logseq = LogseqPlugin(name="Hello Agent", description="Say hello to Logseq", log_level=logging.DEBUG)
 
 
 @logseq.Editor.registerSlashCommand("hello")
@@ -9,4 +10,4 @@ async def hello(sid):
 
 
 if __name__ == "__main__":
-    logseq.run(host="localhost", port=3000)
+    logseq.run(host="localhost", port=8484, debug=True)
