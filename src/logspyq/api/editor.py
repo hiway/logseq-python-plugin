@@ -132,8 +132,8 @@ class Editor(LogseqProxy):
     async def getCurrentPageBlocksTree(self) -> Box:
         return await self.request("getCurrentPageBlocksTree")
 
-    async def getEditingBlockContent(self) -> Box:
-        return await self.request("getEditingBlockContent")
+    async def getEditingBlockContent(self) -> str:
+        return str(await self.request("getEditingBlockContent"))
 
     async def getEditingCursorPosition(self) -> Box:
         return await self.request("getEditingCursorPosition")
