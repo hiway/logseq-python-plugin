@@ -35,8 +35,6 @@ async def on_ready():
 
 @logseq.Editor.registerSlashCommand("Search WolframAlpha")
 async def search_wolfram_alpha(sid):
-    units = "metric"
-    timeout = 10
     query = await logseq.Editor.getEditingBlockContent()
     api_url = "https://api.wolframalpha.com/v1/result"
     payload = {
