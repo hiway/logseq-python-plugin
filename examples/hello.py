@@ -1,7 +1,6 @@
-import logging
 from logspyq.api import LogseqPlugin
 
-logseq = LogseqPlugin(name="Hello Agent", description="Say hello to Logseq", log_level=logging.DEBUG)
+logseq = LogseqPlugin(name="Hello Agent", description="Say hello to Logseq")
 
 
 @logseq.Editor.registerSlashCommand("hello")
