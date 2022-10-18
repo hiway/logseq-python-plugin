@@ -11,6 +11,7 @@ from logspyq.api import LSPluginUser, settings_schema, setting
 
 logger = logging.getLogger(__name__)
 
+
 class TelegramAgent(object):
     def __init__(self, name, bot_admin, work_dir):
         self.name = name
@@ -114,7 +115,7 @@ telegram = TelegramAgent(logseq.name, bot_admin=logseq.settings.bot_admin, work_
 
 @logseq.on_ready()
 async def on_ready():
-    logger.info(f"Logseq: ready")
+    logger.info(f"Logseq plugin is ready")
     if Path(telegram.session_path).exists():
         logger.info(f"Telegram session exists at: {telegram.session_path}")
         await telegram.connect()
@@ -141,33 +142,29 @@ async def on_ready():
 @logseq.Editor.registerSlashCommand("Send via Telegram")
 async def send_via_telegram(sid):
     status = "unknown"
-    logger.info(f"Logseq: sending via Telegram")
+    logger.info(f"sending via Telegram")
     current_block = await logseq.Editor.getCurrentBlock()
     if not current_block:
         status = "Error: No current block."
-        logger.info(f"Logseq: no current block")
+        logger.info(f"no current block")
+        await logseq.App.showMsg(status, "error")
         return
     elif not current_block.content:
         status = "Error: Current block is empty."
-        logger.info(f"Logseq: current block has no content")
+        logger.info(f"current block has no content")
+        await logseq.App.showMsg(status, "error")
         return
     elif telegram.client:
         await telegram.client.send_message(
             logseq.settings.bot_admin,  # type: ignore
             current_block.content,
         )
-        status = "Sent!"
-        logger.info(f"Logseq: sent via Telegram")
-        await logseq.Editor.updateBlock(
-            current_block.uuid,
-            content=f"{current_block.content}\ntelegram: {status}",
-        )
-
+        status = f"Sent to {logseq.settings.bot_admin}!"  # type: ignore
+        logger.info(f"sent via Telegram")
+        await logseq.App.showMsg(status, "success")
     else:
         status = "Error: Telegram agent not connected."
-        await logseq.App.showMsg(
-            "Telegram not connected. Please connect to Telegram first.", "error"
-        )
+        await logseq.App.showMsg(status, "error")
 
 
 if __name__ == "__main__":
