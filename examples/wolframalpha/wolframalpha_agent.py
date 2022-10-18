@@ -22,7 +22,7 @@ class Settings:
 
 
 # --- Logseq Plugin ---
-logseq = LogseqPlugin(name="WolframAlpha", description="Query WolframAlpha from Logseq")
+logseq = LogseqPlugin(name="WolframAlpha Example", description="Query WolframAlpha from Logseq")
 logseq.settings = Settings()
 
 

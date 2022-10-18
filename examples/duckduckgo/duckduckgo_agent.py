@@ -9,7 +9,7 @@ class Settings:
 
 
 # --- Logseq Plugin ---
-logseq = LogseqPlugin(name="DuckDuckGo", description="Search DuckDuckGo from Logseq")
+logseq = LogseqPlugin(name="DuckDuckGo Example", description="Search DuckDuckGo from Logseq")
 logseq.settings = Settings()
 
 

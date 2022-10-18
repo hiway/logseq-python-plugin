@@ -111,7 +111,7 @@ class TelegramAgent(object):
 
 # --- Logseq Plugin ---
 logseq = LogseqPlugin(
-    name="Telegram",
+    name="Telegram Example",
     description="Telegram for interstitial note-taking.",
 )
 logseq.settings = Settings()
