@@ -1,0 +1,9 @@
+[project]
+name = "wolframalpha_agent"
+version = "0.1.0"
+dependencies = [
+    "wolframalpha"
+]
+
+[project.entry-points."logspyq.agents"]
+wolframalpha_agent = "wolframalpha_agent"
