@@ -1,6 +1,6 @@
 from datetime import datetime
 from box import Box
-from typing import Optional
+from typing import Optional, List
 from logspyq.api.proxy import LogseqProxy
 from .utils import mkbox
 
@@ -105,7 +105,7 @@ class Editor(LogseqProxy):
     async def exitEditingMode(self, selectBlock: bool = False):
         await self.emit("exitEditingMode", selectBlock)
 
-    async def getAllPages(self, repo: Optional[str] = None) -> Box:
+    async def getAllPages(self, repo: Optional[str] = None) -> List[Box]:
         if repo:
             return await self.request("getAllPages", {"repo": repo})
         else:
