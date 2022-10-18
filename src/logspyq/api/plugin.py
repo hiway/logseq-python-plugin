@@ -52,7 +52,7 @@ class LogseqPlugin:
         self.emit = self._server.emit
         self.request = self._server.request
 
-    async def register_callbacks_with_logseq(self):
+    async def register_callbacks_with_logseq(self, fire_ready_now=False):
         if self.enabled:
             await self.App.register_callbacks_with_logseq()
             await self.DB.register_callbacks_with_logseq()
@@ -62,8 +62,10 @@ class LogseqPlugin:
             for func, kwargs in self._schedules.items():
                 self._server._scheduler.add_job(func, **kwargs)
             for func, event in self._events.items():
-                if event == "ready":
+                if event == "ready" and not fire_ready_now:
                     self._server._signal_ready.connect(func)
+                elif event == "ready" and fire_ready_now:
+                    await func()
                 else:
                     self._server._sio.on(event)(func)
             log.debug(f"Registered callbacks for {self.name!r}")

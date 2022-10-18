@@ -337,7 +337,7 @@ class PluginServer:
             agent.enabled = not agent.enabled
             self._db[f"agent:{name}:enabled"] = str(agent.enabled)
             if agent.enabled:
-                await agent.register_callbacks_with_logseq()
+                await agent.register_callbacks_with_logseq(fire_ready_now=True)
             return await render_template("_include/agent_list_item_status.html", agent=agent)
         else:
             return "Agent not found", 404
