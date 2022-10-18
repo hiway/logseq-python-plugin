@@ -52,8 +52,10 @@ class PluginServer:
         self._sio.on("*")(self._on_any)
         self._signal_ready = Signal()
         if agent_name and agent:
+            self._single_agent = True
             self._agents = {agent_name: agent}
         else:
+            self._single_agent = False
             self._agents = {}
 
 
@@ -126,15 +128,22 @@ class PluginServer:
                 if enabled_key in self._db:
                     enabled = self._db[enabled_key].decode("utf-8")
                     if enabled == "True":
-                        log.debug(f"  {agent.name} is enabled")
+                        log.info(f"  {agent.name} is enabled")
                         agent.enabled = True
                     else:
-                        log.debug(f"  {agent.name} is disabled")
+                        log.info(f"  {agent.name} is disabled")
                         agent.enabled = False
-                
+                else:
+                    log.info(f"  {agent.name} is disabled by default")
+                    agent.enabled = False
             log.info(f"Found {len(self._agents)} agents: {', '.join(self._agents.keys()) }")
         else:
             log.info("Skipping agent discovery")
+            if self._single_agent:
+                agent = list(self._agents.values())[0]
+                log.warning(f"  {agent.name} is disabled, but single agent mode is enabled")
+                agent.enabled = True
+
     
     async def _load_agent_settings_from_db(self, agent):
         """
