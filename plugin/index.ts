@@ -95,6 +95,12 @@ async function main() {
     console.log("Registered input selection end:", event_name)
   })
 
+  socket.on("Editor.getAllPages", async (data, callback) => {
+    const all_pages = await logseq.Editor.getAllPages()
+    console.log("All pages:", all_pages)
+    callback(all_pages)
+  })
+    
   socket.on("App.onBlockRendererSlotted", async (data) => {
     const event_name = <string>data.event_name
 
@@ -243,17 +249,19 @@ async function main() {
     }
     // If func is AsyncFunction, then call it with await, else call it normally
     if (context[func].constructor.name === "AsyncFunction") {
-      console.log("Calling async function")
       if (args.length > 0) {
+        console.log("Calling async function with args", args)
         return await context[func].apply(context, args);
       } else {
+        console.log("Calling async function")
         return await context[func].apply(context);
       }
     } else {
-      console.log("Calling function")
       if (args.length > 0) {
+        console.log("Calling function with args", args)
         return context[func].apply(context, args);
       } else {
+        console.log("Calling function")
         return context[func].apply(context);
       }
     }
@@ -274,6 +282,7 @@ async function main() {
       "Editor.registerSlashCommand",
       "Editor.registerBlockContextMenuItem",
       "Editor.onInputSelectionEnd",
+      "Editor.getAllPages",
       "App.onBlockRendererSlotted",
       "App.onCurrentGraphChanged",
       "App.onMacroRendererSlotted",
