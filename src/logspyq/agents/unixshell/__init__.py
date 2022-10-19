@@ -36,7 +36,7 @@ async def execute_command_in_shell(sid, event):
         return
     # Execute command
     start_time = time.time()
-    result = await execute_command_async(command)
+    result = await execute_command_async(command, timeout=30)
     duration = time.time() - start_time
     if result.timeout:
         await logseq.App.showMsg(
