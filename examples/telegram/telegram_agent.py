@@ -175,10 +175,11 @@ async def link_page_names(text: str) -> str:
             continue
         text = re.sub(
             r"\b" + page_name + r"\b",
-            f"[[{page_name}]]",
+            f"[[{page_name.replace(' ', '___')}]]",
             text,
             flags=re.IGNORECASE,
         )
+    text = text.replace("___", " ")
     return text
 
 
