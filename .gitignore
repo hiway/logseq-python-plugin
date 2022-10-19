@@ -144,3 +144,7 @@ settings.json
 
 # failed attempts
 _attic/
+
+# profiler
+profile/*
+profile.json
