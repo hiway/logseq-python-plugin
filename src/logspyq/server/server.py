@@ -9,7 +9,7 @@ from pathlib import Path
 import click
 import socketio
 import uvicorn
-import uvloop
+# import uvloop
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from async_signals.dispatcher import Signal
 from box import Box, BoxList
@@ -69,7 +69,7 @@ class PluginServer:
         """
         Run the server, async.
         """
-        uvloop.install()
+        # uvloop.install()
         if debug:
             logging.basicConfig(level=logging.DEBUG, format=self._log_format)
             log.setLevel(logging.DEBUG)
