@@ -4,6 +4,7 @@ import os
 import subprocess
 from typing import List, Optional
 from box import Box
+from ftfy import fix_text
 
 logger = logging.getLogger(__name__)
 SHELLCHECK_PATH = os.environ.get("SHELLCHECK_PATH", "shellcheck")
@@ -71,7 +72,7 @@ async def execute_command_async(command: str, timeout: float = 10) -> Box:
     logger.debug(f"Command stderr: {stderr}")
 
     # Parse output
-    result.stdout = stdout.decode("utf-8").strip()
-    result.stderr = stderr.decode("utf-8").strip()
+    result.stdout = fix_text(stdout.decode("utf-8", errors="ignore").strip())
+    result.stderr = fix_text(stderr.decode("utf-8", errors="ignore").strip())
     result.returncode = process.returncode
     return result
