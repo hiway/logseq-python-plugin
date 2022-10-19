@@ -40,7 +40,7 @@ async def execute_command_in_shell(sid, event):
     duration = time.time() - start_time
     if result.timeout:
         await logseq.App.showMsg(
-            f"Command timed out. Exit code: {result.exitcode}", "warning", timeout=3000
+            f"Command timed out. Exit code: {result.returncode}", "warning", timeout=3000
         )
         return
     # Insert stdout and stderr as new blocks
