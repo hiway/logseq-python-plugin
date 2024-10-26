@@ -13,12 +13,12 @@ class Settings:
 
 
 # --- Logseq Plugin ---
-logseq = LogseqPlugin(name="DuckDuckGo Example", description="Search DuckDuckGo from Logseq")
+logseq = LogseqPlugin(name="DuckDuckGo", description="Search DuckDuckGo from Logseq")
 logseq.settings = Settings()
 
 
 @logseq.Editor.registerSlashCommand("Search DuckDuckGo")
-async def search_duck_duck_go(sid):
+async def search_duck_duck_go(_sid):
     "Search DuckDuckGo and insert (max_results) results below query block in Logseq."
     keywords = await logseq.Editor.getEditingBlockContent()
     results = await AsyncDDGS().atext(keywords, max_results=int(logseq.settings.max_results))
