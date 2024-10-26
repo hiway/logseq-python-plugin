@@ -1,5 +1,5 @@
 from box import Box
-from duckduckgo_search import ddg
+from duckduckgo_search import AsyncDDGS
 from logspyq.api import LogseqPlugin, settings_schema, setting
 
 # --- Settings ---
@@ -16,10 +16,10 @@ logseq.settings = Settings()
 @logseq.Editor.registerSlashCommand("Search DuckDuckGo")
 async def search_duck_duck_go(sid):
     keywords = await logseq.Editor.getEditingBlockContent()
-    results = ddg(keywords)
+    results = await AsyncDDGS().atext(keywords, max_results=int(logseq.settings.max_results))
     results = [Box(r) for r in results]
     current_block = await logseq.Editor.getCurrentBlock()
-    for result in results[:int(logseq.settings.max_results)]:  # type: ignore
+    for result in results:  # type: ignore
         properties = {
             "link": result.href,
             "description": result.body,
