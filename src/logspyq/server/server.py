@@ -92,7 +92,7 @@ class PluginServer:
             asyncio.ensure_future(self._load_agents())
             log.info("Starting server")
             uvconfig = uvicorn.config.Config(
-                self._app, host=host, port=port, debug=debug, reload=debug, log_level="info", log_config={
+                self._app, host=host, port=port, reload=debug, log_level="info", log_config={
                     "version": 1,
                     "disable_existing_loggers": False,
                     "propagate": True,
