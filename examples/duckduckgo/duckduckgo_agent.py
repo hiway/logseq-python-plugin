@@ -1,3 +1,6 @@
+"""
+DuckDuckGo Search Plugin for Logseq
+"""
 from box import Box
 from duckduckgo_search import AsyncDDGS
 from logspyq.api import LogseqPlugin, settings_schema, setting
@@ -5,6 +8,7 @@ from logspyq.api import LogseqPlugin, settings_schema, setting
 # --- Settings ---
 @settings_schema
 class Settings:
+    "Settings appear in the web ui (http://localhost:8484/agent/DuckDuckGo%20Example)"
     max_results: int = setting(default=5, description="Maximum number of results to return")
 
 
@@ -15,6 +19,7 @@ logseq.settings = Settings()
 
 @logseq.Editor.registerSlashCommand("Search DuckDuckGo")
 async def search_duck_duck_go(sid):
+    "Search DuckDuckGo and insert (max_results) results below query block in Logseq."
     keywords = await logseq.Editor.getEditingBlockContent()
     results = await AsyncDDGS().atext(keywords, max_results=int(logseq.settings.max_results))
     results = [Box(r) for r in results]
