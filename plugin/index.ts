@@ -123,16 +123,16 @@ async function main() {
     console.log("Registered current graph changed:", event_name)
   })
 
-  socket.on("App.onMacroRendererSlotted", async (data) => {
-    const event_name = <string>data.event_name
+  // socket.on("App.onMacroRendererSlotted", async (data) => {
+  //   const event_name = <string>data.event_name
 
-    // @ts-ignore
-    logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments } }) => {
-      console.log("Macro renderer slotted:", event_name, slot, arguments)
-      socket.emit(event_name, { slot, arguments })
-    })
-    console.log("Registered macro renderer slotted:", event_name)
-  })
+  //   // @ts-ignore
+  //   logseq.App.onMacroRendererSlotted(async ({ slot, payload: { arguments } }) => {
+  //     console.log("Macro renderer slotted:", event_name, slot, arguments)
+  //     socket.emit(event_name, { slot, arguments })
+  //   })
+  //   console.log("Registered macro renderer slotted:", event_name)
+  // })
 
   socket.on("App.onPageHeadActionsSlotted", async (data) => {
     const event_name = <string>data.event_name

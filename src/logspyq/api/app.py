@@ -40,22 +40,22 @@ class App(LogseqProxy):
 
         return decorator
 
-    def onMacroRendererSlotted(self):
-        def decorator(func):
-            event_name = f"macro-render-slotted"
+    # def onMacroRendererSlotted(self):
+    #     def decorator(func):
+    #         event_name = f"macro-render-slotted"
 
-            async def _async_inner(*args):
-                args = [mkbox(a) for a in args]
-                return await func(*args)
+    #         async def _async_inner(*args):
+    #             args = [mkbox(a) for a in args]
+    #             return await func(*args)
 
-            self.register_callback(
-                "onMacroRendererSlotted",
-                event_name=event_name,
-                func=_async_inner,
-            )
-            return _async_inner
+    #         self.register_callback(
+    #             "onMacroRendererSlotted",
+    #             event_name=event_name,
+    #             func=_async_inner,
+    #         )
+    #         return _async_inner
 
-        return decorator
+    #     return decorator
 
     def onPageHeadActionsSlotted(self):
         def decorator(func):
